@@ -25,6 +25,27 @@ export function useTokens() {
 
     useEffect(() => {
         fetchTokens()
+
+        // Real-time subscription
+        const channel = supabase
+            .channel('tokens-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'tokens',
+                },
+                (payload) => {
+                    console.log('Real-time change detected:', payload)
+                    fetchTokens()
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
     }, [])
 
     const generateToken = async (
