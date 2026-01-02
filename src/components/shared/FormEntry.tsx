@@ -175,14 +175,12 @@ export function FormEntry() {
                     <label className="label">
                         Service Provided <span className="text-red-500">*</span>
                     </label>
-                    <select {...register('serviceType')} className="input">
-                        <option value="">Select service...</option>
-                        <option value="Repair">Repair</option>
-                        <option value="Installation">Installation</option>
-                        <option value="Maintenance">Maintenance</option>
-                        <option value="Consultation">Consultation</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <input
+                        type="text"
+                        {...register('serviceType')}
+                        className="input"
+                        placeholder="Enter service details"
+                    />
                     {errors.serviceType && (
                         <p className="text-red-500 text-xs mt-1">{errors.serviceType.message}</p>
                     )}
