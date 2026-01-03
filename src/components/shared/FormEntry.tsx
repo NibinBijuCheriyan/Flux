@@ -144,10 +144,18 @@ export function FormEntry({ initialToken }: FormEntryProps) {
                     <div className="flex gap-2">
                         <input
                             type="text"
-                            {...register('tokenId')}
+                            {...(() => {
+                                const { onChange, ...rest } = register('tokenId')
+                                return {
+                                    ...rest,
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                        onChange(e)
+                                        setTokenValid(null)
+                                    }
+                                }
+                            })()}
                             className="input flex-1"
                             placeholder="Scan or enter token ID"
-                            onChange={() => setTokenValid(null)}
                         />
                         <button
                             type="button"
