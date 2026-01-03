@@ -45,7 +45,19 @@ export function TokensProvider({ children }: { children: React.ReactNode }) {
                 },
                 (payload) => {
                     console.log('Global Real-time change detected:', payload)
-                    fetchTokens()
+
+                    if (payload.eventType === 'INSERT') {
+                        setTokens((prev) => [payload.new as Token, ...prev])
+                    } else if (payload.eventType === 'UPDATE') {
+                        setTokens((prev) =>
+                            prev.map((t) =>
+                                t.id === (payload.new as Token).id ? (payload.new as Token) : t
+                            )
+                        )
+                    } else if (payload.eventType === 'DELETE') {
+                        // Optional: Handle delete if needed
+                    }
+                    // No longer calling fetchTokens() to avoid network delay
                 }
             )
             .subscribe()

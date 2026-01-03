@@ -11,10 +11,21 @@ export function useTokens() {
         notes?: string
     ) => {
         try {
-            // Generate unique token ID
-            const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-            const random = Math.floor(1000 + Math.random() * 9000)
-            const tokenId = `TKN-${date}-${random}`
+            // SMART TOKEN GENERATION
+            // We encode the data directly into the token ID
+            // Format: FLX-[Base64EncodedData]
+            // Data: { n: name, p: phone, r: random_suffix }
+
+            const payload = {
+                n: customerName,
+                p: customerPhone,
+                r: Math.floor(Math.random() * 10000) // Access code / Uniqueifier
+            }
+
+            // Create Base64 string (browser compatible)
+            const jsonString = JSON.stringify(payload)
+            const encoded = btoa(jsonString)
+            const tokenId = `FLX-${encoded}`
 
             const { data, error } = await supabase
                 .from('tokens')
@@ -32,8 +43,7 @@ export function useTokens() {
                 .single()
 
             if (error) throw error
-            // Context will auto-update via Realtime, but we can also trigger a manual refresh
-            // refreshTokens() 
+            // Context updates via Realtime
             return { data, error: null }
         } catch (error: any) {
             return { data: null, error }
@@ -41,12 +51,45 @@ export function useTokens() {
     }
 
     const validateToken = async (tokenId: string) => {
-        // 1. Check GLOBAL context first (Instant Validation)
-        // This is now shared memory across the whole app
+        // 1. SMART DECODE (Fully Offline/Instant Validation)
+        // We try to read the token string itself.
+        if (tokenId.startsWith('FLX-')) {
+            try {
+                const encoded = tokenId.replace('FLX-', '')
+                const jsonString = atob(encoded)
+                const payload = JSON.parse(jsonString)
+
+                console.log('Smart Token Decoded Instantly:', payload)
+
+                // We have the data! Now just check if it's technically "active" in our cache
+                // But even if cache is stale, we trust this structure first for the UI filling
+                const localToken = tokens.find(t => t.token_id === tokenId)
+
+                if (localToken && localToken.status !== 'active') {
+                    return {
+                        valid: false,
+                        error: 'Token has already been used',
+                        customerName: '',
+                        customerPhone: ''
+                    }
+                }
+
+                return {
+                    valid: true,
+                    error: null,
+                    customerName: payload.n,
+                    customerPhone: payload.p,
+                }
+            } catch (e) {
+                console.error('Smart Token Decode Failed:', e)
+                // Fallthrough to normal check if tampering detected
+            }
+        }
+
+        // 2. Legacy Check (Global Memory)
         const localToken = tokens.find(t => t.token_id === tokenId && t.status === 'active')
 
         if (localToken) {
-            console.log('Token validated from Global Context (Instant)')
             return {
                 valid: true,
                 error: null,
@@ -55,8 +98,7 @@ export function useTokens() {
             }
         }
 
-        // 2. Fallback to Server Check
-        // (Only happens if Realtime hasn't synced yet, which is rare)
+        // 3. Fallback to Server
         try {
             const { data, error } = await supabase
                 .from('tokens')
