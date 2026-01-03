@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Ticket, Copy, CheckCircle2, Loader2 } from 'lucide-react'
+import { Ticket, Copy, CheckCircle2, Loader2, FileText } from 'lucide-react'
 import { useTokens } from '../../hooks/useTokens'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -14,7 +14,11 @@ const tokenSchema = z.object({
 
 type TokenFormData = z.infer<typeof tokenSchema>
 
-export function TokenGenerator() {
+interface TokenGeneratorProps {
+    onUseToken?: (tokenId: string) => void
+}
+
+export function TokenGenerator({ onUseToken }: TokenGeneratorProps) {
     const { user } = useAuth()
     const { generateToken } = useTokens()
     const [generatedToken, setGeneratedToken] = useState<{
@@ -159,22 +163,33 @@ export function TokenGenerator() {
                                     {generatedToken.tokenId}
                                 </p>
                             </div>
-                            <button
-                                onClick={copyToken}
-                                className="btn-secondary flex items-center gap-2"
-                            >
-                                {copied ? (
-                                    <>
-                                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                                        Copied!
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="w-4 h-4" />
-                                        Copy
-                                    </>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={copyToken}
+                                    className="btn-secondary flex items-center gap-2"
+                                >
+                                    {copied ? (
+                                        <>
+                                            <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                            Copied
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Copy className="w-4 h-4" />
+                                            Copy
+                                        </>
+                                    )}
+                                </button>
+                                {onUseToken && (
+                                    <button
+                                        onClick={() => onUseToken(generatedToken.tokenId)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        Use Now
+                                    </button>
                                 )}
-                            </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 pt-4 border-t">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -23,7 +23,11 @@ const formEntrySchema = z.object({
 
 type FormEntryData = z.infer<typeof formEntrySchema>
 
-export function FormEntry() {
+interface FormEntryProps {
+    initialToken?: string
+}
+
+export function FormEntry({ initialToken }: FormEntryProps) {
     const { user } = useAuth()
     const { validateToken, markTokenAsUsed } = useTokens()
     const { addEntry } = useFormEntries()
@@ -41,15 +45,26 @@ export function FormEntry() {
         reset,
     } = useForm<FormEntryData>({
         resolver: zodResolver(formEntrySchema),
+        defaultValues: {
+            tokenId: initialToken || ''
+        }
     })
 
     const tokenId = watch('tokenId')
 
-    const handleTokenValidation = async () => {
-        if (!tokenId) return
+    // Auto-validate if initialToken is provided
+    useEffect(() => {
+        if (initialToken) {
+            handleTokenValidation(initialToken)
+        }
+    }, [initialToken])
+
+    const handleTokenValidation = async (specificTokenId?: string) => {
+        const tokenToCheck = specificTokenId || tokenId
+        if (!tokenToCheck) return
 
         setIsValidating(true)
-        const result = await validateToken(tokenId)
+        const result = await validateToken(tokenToCheck)
 
         if (result.valid) {
             setTokenValid(true)
@@ -136,7 +151,7 @@ export function FormEntry() {
                         />
                         <button
                             type="button"
-                            onClick={handleTokenValidation}
+                            onClick={() => handleTokenValidation()}
                             disabled={!tokenId || isValidating}
                             className="btn-secondary"
                         >
