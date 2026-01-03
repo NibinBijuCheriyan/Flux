@@ -1,52 +1,8 @@
-import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Token } from '../lib/types'
+import { useTokensContext } from '../context/TokensContext'
 
 export function useTokens() {
-    const [tokens, setTokens] = useState<Token[]>([])
-    const [loading, setLoading] = useState(true)
-
-    const fetchTokens = async () => {
-        setLoading(true)
-        try {
-            const { data, error } = await supabase
-                .from('tokens')
-                .select('*')
-                .order('generated_at', { ascending: false })
-
-            if (error) throw error
-            setTokens(data || [])
-        } catch (error) {
-            console.error('Error fetching tokens:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchTokens()
-
-        // Real-time subscription
-        const channel = supabase
-            .channel('tokens-changes')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'tokens',
-                },
-                (payload) => {
-                    console.log('Real-time change detected:', payload)
-                    fetchTokens()
-                }
-            )
-            .subscribe()
-
-        return () => {
-            supabase.removeChannel(channel)
-        }
-    }, [])
+    const { tokens, loading, refreshTokens } = useTokensContext()
 
     const generateToken = async (
         customerName: string,
@@ -76,7 +32,8 @@ export function useTokens() {
                 .single()
 
             if (error) throw error
-            await fetchTokens()
+            // Context will auto-update via Realtime, but we can also trigger a manual refresh
+            // refreshTokens() 
             return { data, error: null }
         } catch (error: any) {
             return { data: null, error }
@@ -84,11 +41,12 @@ export function useTokens() {
     }
 
     const validateToken = async (tokenId: string) => {
-        // 1. Check local cache first (Instant Validation)
+        // 1. Check GLOBAL context first (Instant Validation)
+        // This is now shared memory across the whole app
         const localToken = tokens.find(t => t.token_id === tokenId && t.status === 'active')
 
         if (localToken) {
-            console.log('Token validated from local cache (Instant)')
+            console.log('Token validated from Global Context (Instant)')
             return {
                 valid: true,
                 error: null,
@@ -97,7 +55,8 @@ export function useTokens() {
             }
         }
 
-        // 2. Fallback to Server Check (if not in local list yet)
+        // 2. Fallback to Server Check
+        // (Only happens if Realtime hasn't synced yet, which is rare)
         try {
             const { data, error } = await supabase
                 .from('tokens')
@@ -142,7 +101,7 @@ export function useTokens() {
                 .eq('token_id', tokenId)
 
             if (error) throw error
-            await fetchTokens()
+            // Context updates via Realtime
             return { error: null }
         } catch (error: any) {
             return { error }
@@ -150,6 +109,7 @@ export function useTokens() {
     }
 
     const searchTokensByPhone = async (phone: string) => {
+        // We can optimize this too if needed, but server search is fine for historical lookups
         try {
             const { data, error } = await supabase
                 .from('tokens')
@@ -172,7 +132,7 @@ export function useTokens() {
                 .eq('id', tokenId)
 
             if (error) throw error
-            await fetchTokens()
+            // Context updates via Realtime
             return { error: null }
         } catch (error: any) {
             return { error }
@@ -187,6 +147,6 @@ export function useTokens() {
         markTokenAsUsed,
         searchTokensByPhone,
         cancelToken,
-        refetch: fetchTokens,
+        refetch: refreshTokens,
     }
 }
