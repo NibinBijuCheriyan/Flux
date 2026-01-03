@@ -84,6 +84,20 @@ export function useTokens() {
     }
 
     const validateToken = async (tokenId: string) => {
+        // 1. Check local cache first (Instant Validation)
+        const localToken = tokens.find(t => t.token_id === tokenId && t.status === 'active')
+
+        if (localToken) {
+            console.log('Token validated from local cache (Instant)')
+            return {
+                valid: true,
+                error: null,
+                customerName: localToken.customer_name,
+                customerPhone: localToken.customer_phone,
+            }
+        }
+
+        // 2. Fallback to Server Check (if not in local list yet)
         try {
             const { data, error } = await supabase
                 .from('tokens')
