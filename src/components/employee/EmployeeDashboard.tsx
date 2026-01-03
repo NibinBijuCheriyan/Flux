@@ -22,6 +22,14 @@ export function EmployeeDashboard() {
     const myTodayEntries = myEntries.filter((e) => isToday(new Date(e.submitted_at)))
     const myTokens = tokens.filter((t) => t.generated_by === user?.id)
 
+    const [scannedToken, setScannedToken] = useState<string | undefined>(undefined)
+
+    // Handler for "Use Now" button in Token Generator
+    const handleUseToken = (tokenId: string) => {
+        setScannedToken(tokenId)
+        setActiveTab('form')
+    }
+
     const tabs = [
         { id: 'overview' as Tab, label: 'Overview', icon: LayoutDashboard },
         { id: 'tokens' as Tab, label: 'Tokens', icon: Ticket },
@@ -47,8 +55,8 @@ export function EmployeeDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                                        : 'text-gray-600 hover:bg-gray-100'
+                                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                                    : 'text-gray-600 hover:bg-gray-100'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -154,12 +162,12 @@ export function EmployeeDashboard() {
 
             {activeTab === 'tokens' && (
                 <div className="space-y-6">
-                    <TokenGenerator />
+                    <TokenGenerator onUseToken={handleUseToken} />
                     <TokenHistory />
                 </div>
             )}
 
-            {activeTab === 'form' && <FormEntry />}
+            {activeTab === 'form' && <FormEntry initialToken={scannedToken} />}
 
             {activeTab === 'mydata' && <TodayDataView />}
         </div>
