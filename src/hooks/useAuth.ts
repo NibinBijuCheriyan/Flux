@@ -89,15 +89,24 @@ export function useAuth() {
         }
     }
 
-    const signInWithEmail = async (email: string, options?: { data: { role: string } }) => {
-        const { error } = await supabase.auth.signInWithOtp({
+    const signIn = async (email: string, password: string) => {
+        const { data, error } = await supabase.auth.signInWithPassword({
             email,
+            password,
+        })
+        return { data, error }
+    }
+
+    const signUp = async (email: string, password: string, role: 'manager' | 'employee') => {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
             options: {
+                data: { role }, // Pass role in metadata
                 emailRedirectTo: window.location.origin,
-                data: options?.data,
             },
         })
-        return { error }
+        return { data, error }
     }
 
     const signOut = async () => {
@@ -109,7 +118,8 @@ export function useAuth() {
         user,
         session,
         loading,
-        signInWithEmail,
+        signIn,
+        signUp,
         signOut,
     }
 }

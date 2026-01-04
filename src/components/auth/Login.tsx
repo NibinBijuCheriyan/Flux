@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { Mail, Loader2, CheckCircle2 } from 'lucide-react'
+import { Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 export function Login() {
-    const { signInWithEmail } = useAuth()
+    const { signIn, signUp } = useAuth()
     const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
-    const [emailSent, setEmailSent] = useState(false)
+    const [verificationSent, setVerificationSent] = useState(false)
 
     const [role, setRole] = useState<'employee' | 'manager'>('employee')
     const [isRegistering, setIsRegistering] = useState(false)
@@ -15,20 +16,23 @@ export function Login() {
         e.preventDefault()
         setLoading(true)
 
-        // Only include role if registering
-        const options = isRegistering ? { data: { role } } : undefined
-        const { error } = await signInWithEmail(email, options)
-
-        if (error) {
-            alert('Error sending magic link: ' + error.message)
-        } else {
-            setEmailSent(true)
+        try {
+            if (isRegistering) {
+                const { error } = await signUp(email, password, role)
+                if (error) throw error
+                setVerificationSent(true)
+            } else {
+                const { error } = await signIn(email, password)
+                if (error) throw error
+            }
+        } catch (error: any) {
+            alert(error.message)
+        } finally {
+            setLoading(false)
         }
-
-        setLoading(false)
     }
 
-    if (emailSent) {
+    if (verificationSent) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="card max-w-md w-full text-center animate-slide-up">
@@ -37,17 +41,18 @@ export function Login() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">Check Your Email</h2>
                     <p className="text-gray-600 mb-6">
-                        We've sent a magic link to <strong>{email}</strong>. Click the link in the email to
-                        sign in.
+                        We've sent a confirmation link to <strong>{email}</strong>. Please click the link to verify your account and sign in.
                     </p>
                     <button
                         onClick={() => {
-                            setEmailSent(false)
+                            setVerificationSent(false)
                             setEmail('')
+                            setPassword('')
+                            setIsRegistering(false)
                         }}
                         className="btn-secondary w-full"
                     >
-                        Use Different Email
+                        Return to Sign In
                     </button>
                 </div>
             </div>
@@ -113,17 +118,30 @@ export function Login() {
                         </div>
                     </div>
 
+                    <div>
+                        <label className="label">Password</label>
+                        <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="input pl-10"
+                                placeholder="••••••••"
+                                required
+                                minLength={6}
+                            />
+                        </div>
+                    </div>
+
                     <button type="submit" disabled={loading} className="btn-primary w-full">
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Sending Magic Link...
+                                {isRegistering ? 'Creating Account...' : 'Signing In...'}
                             </>
                         ) : (
-                            <>
-                                <Mail className="w-5 h-5" />
-                                {isRegistering ? 'Sign Up' : 'Sign In'}
-                            </>
+                            isRegistering ? 'Sign Up' : 'Sign In'
                         )}
                     </button>
                 </form>
@@ -132,7 +150,10 @@ export function Login() {
                     <p className="text-sm text-gray-500 text-center">
                         {isRegistering ? 'Already have an account?' : "Don't have an account?"}{' '}
                         <button
-                            onClick={() => setIsRegistering(!isRegistering)}
+                            onClick={() => {
+                                setIsRegistering(!isRegistering)
+                                setPassword('')
+                            }}
                             className="text-blue-600 font-semibold hover:text-blue-700"
                         >
                             {isRegistering ? 'Sign In' : 'Create Account'}
