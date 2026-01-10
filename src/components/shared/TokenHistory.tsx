@@ -74,6 +74,9 @@ export function TokenHistory() {
                                 Token ID
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                No.
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Customer
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -109,6 +112,9 @@ export function TokenHistory() {
                                         <span className="font-mono text-sm font-medium text-gray-900">
                                             {token.token_id}
                                         </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-bold">
+                                        #{token.daily_number || '-'}
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                         {token.customer_name}

@@ -17,6 +17,7 @@ export interface Token {
     status: 'active' | 'used' | 'cancelled';
     used_at?: string;
     notes?: string;
+    daily_number?: number;
 }
 
 // Updated to match reworked form
