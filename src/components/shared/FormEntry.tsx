@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { FileText, Loader2, CheckCircle2, Banknote, DollarSign } from 'lucide-react'
+import { FileText, Loader2, CheckCircle2, DollarSign } from 'lucide-react'
 import { useTokens } from '../../hooks/useTokens'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useAuth } from '../../hooks/useAuth'
@@ -35,6 +35,9 @@ export function FormEntry({ initialToken }: FormEntryProps) {
     const [tokenValid, setTokenValid] = useState<boolean | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitSuccess, setSubmitSuccess] = useState(false)
+
+    // New state to store info for printing receipt
+    const [lastEntry, setLastEntry] = useState<FormEntryData | null>(null)
 
     const {
         register,
@@ -106,14 +109,95 @@ export function FormEntry({ initialToken }: FormEntryProps) {
         await markTokenAsUsed(data.tokenId)
 
         setSubmitSuccess(true)
+        setLastEntry(data) // Save for printing
         reset()
         setTokenValid(null)
 
-        setTimeout(() => {
-            setSubmitSuccess(false)
-        }, 3000)
+        // REMOVED auto-hide timeout to allow time for printing receipt
+        // setTimeout(() => {
+        //     setSubmitSuccess(false)
+        // }, 3000)
 
         setIsSubmitting(false)
+    }
+
+    const handlePrintReceipt = () => {
+        if (!lastEntry) return
+
+        const totalAmount = parseFloat(lastEntry.serviceCharge) + parseFloat(lastEntry.bankCharge)
+        const date = new Date().toLocaleString()
+
+        const printWindow = window.open('', '_blank', 'width=600,height=800')
+        if (printWindow) {
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Payment Receipt</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; padding: 20px; max-width: 400px; margin: 0 auto; }
+                        .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px; }
+                        .title { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+                        .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                        .total-row { display: flex; justify-content: space-between; margin-top: 15px; border-top: 2px dashed #000; padding-top: 10px; font-weight: bold; font-size: 18px; }
+                        .footer { margin-top: 30px; text-align: center; font-size: 12px; }
+                        @media print {
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">SERVICE RECEIPT</div>
+                        <div>Flux Service Center</div>
+                        <div>${date}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span>Token ID:</span>
+                        <span>${lastEntry.tokenId}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Customer:</span>
+                        <span>${lastEntry.customerName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Service:</span>
+                        <span>${lastEntry.serviceType}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Payment:</span>
+                        <span>${lastEntry.paymentMethod}</span>
+                    </div>
+                    
+                    <br/>
+                    
+                    <div class="info-row">
+                        <span>Service Charge:</span>
+                        <span>₹${parseFloat(lastEntry.serviceCharge).toFixed(2)}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Bank Charge:</span>
+                        <span>₹${parseFloat(lastEntry.bankCharge).toFixed(2)}</span>
+                    </div>
+                    
+                    <div class="total-row">
+                        <span>TOTAL</span>
+                        <span>₹${totalAmount.toFixed(2)}</span>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>Thank you for your business!</p>
+                        <p>This is a computer generated receipt.</p>
+                    </div>
+
+                    <script>
+                        window.onload = function() { window.print(); }
+                    </script>
+                </body>
+                </html>
+            `)
+            printWindow.document.close()
+        }
     }
 
     return (
@@ -129,9 +213,21 @@ export function FormEntry({ initialToken }: FormEntryProps) {
             </div>
 
             {submitSuccess && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3 animate-slide-up">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" />
-                    <p className="text-green-800 font-medium">Entry recorded successfully!</p>
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-slide-up">
+                    <div className="flex items-center gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                        <div>
+                            <p className="text-green-800 font-medium">Entry recorded successfully!</p>
+                            <p className="text-sm text-green-600">Want to print a receipt?</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handlePrintReceipt}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                    >
+                        <FileText className="w-4 h-4" />
+                        Print Receipt
+                    </button>
                 </div>
             )}
 
@@ -151,6 +247,11 @@ export function FormEntry({ initialToken }: FormEntryProps) {
                                     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                                         onChange(e)
                                         setTokenValid(null)
+                                        // Reset success message when user starts new entry
+                                        if (submitSuccess) {
+                                            setSubmitSuccess(false)
+                                            setLastEntry(null)
+                                        }
                                     }
                                 }
                             })()}
@@ -235,7 +336,7 @@ export function FormEntry({ initialToken }: FormEntryProps) {
                             Bank Charge <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
-                            <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                                 type="number"
                                 step="0.01"
