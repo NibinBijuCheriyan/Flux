@@ -42,10 +42,26 @@ export function useFormEntries() {
         }
     }
 
+    const deleteEntry = async (id: string) => {
+        try {
+            const { error } = await supabase
+                .from('form_entries')
+                .delete()
+                .eq('id', id)
+
+            if (error) throw error
+            await fetchEntries()
+            return { error: null }
+        } catch (error: any) {
+            return { error }
+        }
+    }
+
     return {
         entries,
         loading,
         addEntry,
+        deleteEntry,
         refetch: fetchEntries,
     }
 }

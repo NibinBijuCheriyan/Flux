@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { Database, Search, FileSpreadsheet } from 'lucide-react'
+import { Database, Search, FileSpreadsheet, Trash2 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useUsers } from '../../hooks/useUsers'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 
 export function AllDataView() {
-    const { entries, loading } = useFormEntries()
+    const { entries, loading, deleteEntry } = useFormEntries()
     const { users } = useUsers()
     const [searchTerm, setSearchTerm] = useState('')
     const [employeeFilter, setEmployeeFilter] = useState('all')
@@ -36,6 +36,16 @@ export function AllDataView() {
 
         return matchesSearch && matchesEmployee && matchesDate
     })
+
+    const handleDelete = async (id: string) => {
+        if (window.confirm('Are you sure you want to delete this entry? This action cannot be undone.')) {
+            const { error } = await deleteEntry(id)
+            if (error) {
+                alert('Error deleting entry')
+                console.error(error)
+            }
+        }
+    }
 
     const exportToExcel = () => {
         const dataToExport = filteredEntries.map(entry => ({
@@ -149,6 +159,9 @@ export function AllDataView() {
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Payment
                             </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -189,6 +202,15 @@ export function AllDataView() {
                                             {entry.payment_method || 'N/A'}
                                         </span>
                                     </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-sm">
+                                        <button
+                                            onClick={() => handleDelete(entry.id)}
+                                            className="text-red-600 hover:text-red-900 transition-colors p-1 rounded hover:bg-red-50"
+                                            title="Delete Entry"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -203,6 +225,6 @@ export function AllDataView() {
                     <strong>{entries.length}</strong> total entries
                 </p>
             </div>
-        </div>
+        </div >
     )
 }

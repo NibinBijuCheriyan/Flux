@@ -217,6 +217,7 @@ Your setup is complete when:
 - ✅ Manager can generate tokens
 - ✅ Manager can submit form entries
 - ✅ Manager can view all data with filters
+- ✅ Manager can delete data entries
 - ✅ Manager can export data to CSV
 - ✅ Employee can login and see Employee Dashboard
 - ✅ Employee can generate tokens
