@@ -7,7 +7,7 @@ import { ManagerDashboard } from './components/manager/ManagerDashboard'
 import { EmployeeDashboard } from './components/employee/EmployeeDashboard'
 
 function App() {
-    const { user, session, loading } = useAuth()
+    const { user, session, loading, signOut } = useAuth()
 
     if (loading) {
         return (
@@ -59,8 +59,7 @@ function App() {
 
                         <button
                             onClick={async () => {
-                                const { supabase } = await import('./lib/supabase')
-                                await supabase.auth.signOut()
+                                await signOut()
                                 window.location.reload()
                             }}
                             className="btn-secondary w-full"
