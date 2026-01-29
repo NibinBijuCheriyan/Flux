@@ -2,7 +2,7 @@
 
 A complete, production-ready CRM web application built with React, TypeScript, and Supabase. Features role-based access control for managers and employees with token-based form submissions.
 
-## 🚀 Features
+## Features
 
 ### Authentication
 - **Magic Link Authentication**: Passwordless email-based login via Supabase Auth
@@ -10,29 +10,29 @@ A complete, production-ready CRM web application built with React, TypeScript, a
 - **Secure Sessions**: Managed by Supabase with automatic token refresh
 
 ### Manager Capabilities
-- ✅ **Employee Management**: Add/remove employee email addresses
-- ✅ **Token Generation**: Create unique tokens for form submissions
-- ✅ **Token Management**: View, search, and cancel tokens
-- ✅ **Complete Data Access**: View ALL entries from ALL employees and ALL days
-- ✅ **Advanced Filtering**: Filter by employee, date range, status
-- ✅ **Data Export**: Export filtered data to CSV
-- ✅ **Analytics Dashboard**: Real-time statistics and insights
+- **Employee Management**: Add/remove employee email addresses
+- **Token Generation**: Create unique tokens for form submissions
+- **Token Management**: View, search, and cancel tokens
+- **Complete Data Access**: View ALL entries from ALL employees and ALL days
+- **Advanced Filtering**: Filter by employee, date range, status
+- **Data Export**: Export filtered data to CSV
+- **Analytics Dashboard**: Real-time statistics and insights
 
 ### Employee Capabilities
-- ✅ **Token Generation**: Create tokens for customers
-- ✅ **Form Submission**: Submit entries with token validation
-- ✅ **Restricted Data View**: View ONLY own entries from CURRENT DAY
-- ✅ **Personal Statistics**: Track daily and total submissions
+- **Token Generation**: Create tokens for customers
+- **Form Submission**: Submit entries with token validation
+- **Restricted Data View**: View ONLY own entries from CURRENT DAY
+- **Personal Statistics**: Track daily and total submissions
 
 ### Token System
-- ✅ **Unique Token IDs**: Format `TKN-YYYYMMDD-XXXX`
-- ✅ **Customer Information**: Store name and phone with each token
-- ✅ **Token Validation**: Verify token status before form submission
-- ✅ **Auto-fill Customer Data**: Customer details populate from valid tokens
-- ✅ **Status Tracking**: Active, Used, Cancelled states
-- ✅ **Search Functionality**: Search by token ID, phone, or customer name
+- **Unique Token IDs**: Format `TKN-YYYYMMDD-XXXX`
+- **Customer Information**: Store name and phone with each token
+- **Token Validation**: Verify token status before form submission
+- **Auto-fill Customer Data**: Customer details populate from valid tokens
+- **Status Tracking**: Active, Used, Cancelled states
+- **Search Functionality**: Search by token ID, phone, or customer name
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 18** with TypeScript
@@ -47,12 +47,12 @@ A complete, production-ready CRM web application built with React, TypeScript, a
 - **Row Level Security (RLS)** for automatic data filtering
 - **Magic Links** for passwordless authentication
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js 18+ and npm
 - A Supabase account (free tier works)
 
-## 🔧 Setup Instructions
+## Setup Instructions
 
 ### 1. Clone and Install Dependencies
 
@@ -121,7 +121,7 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## 📊 Database Schema
+## Database Schema
 
 See `database-setup.sql` for the complete schema. Key tables:
 
@@ -131,7 +131,7 @@ See `database-setup.sql` for the complete schema. Key tables:
 
 All tables have Row Level Security (RLS) enabled for automatic data filtering based on user role.
 
-## 🎨 Usage Guide
+## Usage Guide
 
 ### For Managers
 
@@ -151,16 +151,16 @@ All tables have Row Level Security (RLS) enabled for automatic data filtering ba
    - Complete the form and submit
 4. **View Today's Work**: See only your entries from today
 
-## 🔒 Security Features
+## Security Features
 
-- ✅ Row Level Security (RLS) on all tables
-- ✅ Employees can only see their own data from today
-- ✅ Managers can see all data from all time
-- ✅ Token validation prevents unauthorized submissions
-- ✅ Secure authentication via Supabase Auth
-- ✅ Environment variables for sensitive data
+- Row Level Security (RLS) on all tables
+- Employees can only see their own data from today
+- Managers can see all data from all time
+- Token validation prevents unauthorized submissions
+- Secure authentication via Supabase Auth
+- Environment variables for sensitive data
 
-## 📱 Responsive Design
+## Responsive Design
 
 The application is fully responsive and works on:
 - Desktop (1920px+)
@@ -168,7 +168,7 @@ The application is fully responsive and works on:
 - Tablet (768px+)
 - Mobile (320px+)
 
-## 🚀 Deployment
+## Deployment
 
 ### Deploy to Vercel
 
@@ -178,7 +178,7 @@ The application is fully responsive and works on:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
 4. Update Supabase redirect URLs to your production domain
-5. Deploy!
+5. Deploy
 
 ### Deploy to Netlify
 
@@ -188,30 +188,30 @@ The application is fully responsive and works on:
 4. Publish directory: `dist`
 5. Add environment variables
 6. Update Supabase redirect URLs
-7. Deploy!
+7. Deploy
 
-## 🧪 Testing Scenarios
+## Testing Scenarios
 
-- ✅ Manager login and employee management
-- ✅ Employee login and restricted access
-- ✅ Token generation and validation
-- ✅ Form submission with valid/invalid tokens
-- ✅ Data filtering by role (RLS)
-- ✅ Date boundary transitions (employee data visibility)
-- ✅ Search and filter functionality
-- ✅ CSV export
+- Manager login and employee management
+- Employee login and restricted access
+- Token generation and validation
+- Form submission with valid/invalid tokens
+- Data filtering by role (RLS)
+- Date boundary transitions (employee data visibility)
+- Search and filter functionality
+- CSV export
 
-## 📝 Future Enhancements
+## Future Enhancements
 
-- [ ] Real-time updates with Supabase subscriptions
-- [ ] Advanced analytics and reporting
-- [ ] File upload support
-- [ ] Email notifications
-- [ ] Mobile app (React Native)
-- [ ] Multi-language support
-- [ ] Dark mode
+- Real-time updates with Supabase subscriptions
+- Advanced analytics and reporting
+- File upload support
+- Email notifications
+- Mobile app (React Native)
+- Multi-language support
+- Dark mode
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Magic Link Not Received
 - Check spam folder
@@ -228,11 +228,11 @@ The application is fully responsive and works on:
 - Check token hasn't been used already
 - Verify token format matches `TKN-YYYYMMDD-XXXX`
 
-## 📄 License
+## License
 
 MIT License - feel free to use this project for your own purposes.
 
-## 🤝 Support
+## Support
 
 For issues or questions:
 1. Check the troubleshooting section
@@ -241,4 +241,4 @@ For issues or questions:
 
 ---
 
-Built with ❤️ using React, TypeScript, and Supabase
+Built with React, TypeScript, and Supabase
