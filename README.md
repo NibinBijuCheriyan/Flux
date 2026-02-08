@@ -80,7 +80,7 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 #### Set Up Database Schema
 1. Go to Supabase Dashboard > SQL Editor
-2. Run the SQL from `database-setup.sql` (see below)
+2. Run the SQL from `supabase/migrations/001_database_setup.sql` (see below)
 3. This creates all tables, RLS policies, and indexes
 
 ### 3. Configure Authentication
@@ -123,7 +123,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## 📊 Database Schema
 
-See `database-setup.sql` for the complete schema. Key tables:
+See `supabase/migrations/001_database_setup.sql` for the complete schema. Key tables:
 
 - **users**: Stores user information and roles
 - **tokens**: Token generation and tracking
@@ -145,7 +145,7 @@ All tables have Row Level Security (RLS) enabled for automatic data filtering ba
 
 1. **Login**: Enter your email and click the magic link
 2. **Generate Tokens**: Create tokens for customers
-3. **Submit Entries**: 
+3. **Submit Entries**:
    - Enter token ID and click "Validate"
    - Customer details auto-fill from token
    - Complete the form and submit
