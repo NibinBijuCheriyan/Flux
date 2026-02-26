@@ -27,10 +27,10 @@ ALTER TABLE centers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Centers readable by authenticated users" ON centers
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
--- Only users with 'center_manager' role can insert/update centers
+-- Only users with 'owner' role can insert/update centers
 CREATE POLICY "Managers can manage centers" ON centers
   FOR ALL USING (
-    (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+    (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
   );
 
 CREATE INDEX IF NOT EXISTS idx_centers_code ON centers(code);
@@ -87,7 +87,7 @@ CREATE POLICY "Users visibility" ON users
     OR (
       center_id IS NOT NULL
       AND center_id = get_my_center_id()
-      AND (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+      AND (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
     )
     -- Pending users (center_id IS NULL): managers can see them if added_by = auth.uid()
     OR (center_id IS NULL AND added_by = auth.uid())
@@ -96,13 +96,13 @@ CREATE POLICY "Users visibility" ON users
 -- Managers can insert new pre-created employee rows in their center
 CREATE POLICY "Managers can add users" ON users
   FOR INSERT WITH CHECK (
-    (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+    (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
   );
 
 -- Managers can update users in their center (including approving pending employees)
 CREATE POLICY "Managers can update users" ON users
   FOR UPDATE USING (
-    (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+    (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
     AND (
       center_id = get_my_center_id()   -- already in same center
       OR added_by = auth.uid()          -- or pending (center_id NULL, added by this manager)
@@ -116,7 +116,7 @@ CREATE POLICY "Tokens visibility" ON tokens
     OR (
       center_id IS NOT NULL
       AND center_id = get_my_center_id()
-      AND (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+      AND (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
     )
   );
 
@@ -128,7 +128,7 @@ CREATE POLICY "Token updates" ON tokens
     generated_by = auth.uid()
     OR (
       center_id = get_my_center_id()
-      AND (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+      AND (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
     )
   );
 
@@ -139,7 +139,7 @@ CREATE POLICY "Form entries visibility" ON form_entries
     OR (
       center_id IS NOT NULL
       AND center_id = get_my_center_id()
-      AND (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+      AND (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
     )
   );
 
@@ -151,20 +151,20 @@ CREATE POLICY "Entry updates" ON form_entries
     employee_id = auth.uid()
     OR (
       center_id = get_my_center_id()
-      AND (SELECT role FROM users WHERE id = auth.uid()) = 'center_manager'
+      AND (SELECT role FROM users WHERE id = auth.uid()) = 'owner'
     )
   );
 
 -- ============================================
--- 6. SEED: rename existing 'manager' role to 'center_manager'
+-- 6. SEED: rename existing 'manager' role to 'owner'
 -- ============================================
 -- If you ran 012_roles_table.sql, add the new role:
 INSERT INTO roles (role_name, description)
-VALUES ('center_manager', 'Manages a single center — sees all data within their center')
+VALUES ('owner', 'Owns a center — sees all data within their center')
 ON CONFLICT (role_name) DO NOTHING;
 
--- Migrate any existing 'manager' users to 'center_manager'
-UPDATE users SET role = 'center_manager' WHERE role = 'manager';
+-- Migrate any existing 'manager' users to 'owner'
+UPDATE users SET role = 'owner' WHERE role = 'manager';
 
 -- ============================================
 -- Verification:

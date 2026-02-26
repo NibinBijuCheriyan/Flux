@@ -51,8 +51,8 @@ function App() {
     }
 
     // Fully active user — route by role.
-    // Supports both 'center_manager' (post-013 migration) and legacy 'manager'.
-    const isManager = user.role === 'center_manager' || user.role === 'manager'
+    // Supports both 'owner' (post-013 migration) and legacy 'manager'.
+    const isManager = user.role === 'owner' || user.role === 'manager'
 
     return (
         <TokensProvider>
