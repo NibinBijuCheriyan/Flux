@@ -131,7 +131,7 @@ export function AllDataView() {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[60vh] border border-gray-200 rounded-lg">
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b-2 border-gray-200">
                         <tr>

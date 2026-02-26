@@ -66,7 +66,7 @@ export function TokenHistory() {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[60vh] border border-gray-200 rounded-lg">
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b-2 border-gray-200">
                         <tr>
@@ -91,7 +91,7 @@ export function TokenHistory() {
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Used At
                             </th>
-                            {user?.role === 'manager' && (
+                            {(user?.role === 'manager' || user?.role === 'owner') && (
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions
                                 </th>
@@ -141,7 +141,7 @@ export function TokenHistory() {
                                             ? format(new Date(token.used_at), 'MMM dd, yyyy HH:mm')
                                             : '-'}
                                     </td>
-                                    {user?.role === 'manager' && (
+                                    {(user?.role === 'manager' || user?.role === 'owner') && (
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             {token.status === 'active' && (
                                                 <button
