@@ -1,7 +1,17 @@
+export interface Center {
+    id: string;
+    name: string;
+    location: string;
+    code: string;
+    status: 'active' | 'inactive';
+    created_at: string;
+}
+
 export interface User {
     id: string;
     email: string;
-    role: 'manager' | 'employee';
+    role: string;           // Dynamic — backed by the roles reference table
+    center_id: string | null; // null = pending activation (no center assigned yet)
     added_at: string;
     added_by?: string;
     is_active: boolean;
@@ -14,6 +24,7 @@ export interface Token {
     customer_phone: string;
     generated_by: string;
     generated_at: string;
+    center_id?: string | null;
     status: 'active' | 'used' | 'cancelled';
     used_at?: string;
     notes?: string;
@@ -26,20 +37,22 @@ export interface FormEntry {
     employee_id: string;
     token_used?: string;
     submitted_at: string;
+    center_id?: string | null;
     customer_name: string;
     service_type: string;
-    service_charge: number;   // New
-    bank_charge: number;      // New
-    payment_method: string;   // New
-    description?: string;     // Optional/Unused
+    service_charge: number;
+    bank_charge: number;
+    payment_method: string;
+    description?: string;
     status: string;
-    priority?: string;        // Made optional
-    contact_number?: string;  // Made optional
-    estimated_cost?: number;  // Made optional
+    priority?: string;
+    contact_number?: string;
+    estimated_cost?: number;
 }
 
 export interface AuthUser {
     id: string;
     email: string;
-    role: 'manager' | 'employee';
+    role: string;           // Dynamic — use string comparison (e.g. role === 'center_manager')
+    center_id: string | null; // null = limbo / pending activation
 }

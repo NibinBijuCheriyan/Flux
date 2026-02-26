@@ -8,27 +8,23 @@ export function useAuth() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Check active session
-        supabase.auth.getSession().then(({ data: { session }, error }) => {
-            console.log('useAuth: getSession result', { session, error })
+        // Restore session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session)
             if (session?.user) {
-                console.log('useAuth: Session found, fetching role for', session.user.id)
-                fetchUserRole(session.user.id, session.user.email!)
+                fetchUserProfile(session.user.id)
             } else {
-                console.log('useAuth: No session found')
                 setLoading(false)
             }
         })
 
-        // Listen for auth changes
+        // Keep session state in sync with Supabase auth events
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-            console.log('useAuth: Auth state change', _event, session)
             setSession(session)
             if (session?.user) {
-                fetchUserRole(session.user.id, session.user.email!)
+                fetchUserProfile(session.user.id)
             } else {
                 setUser(null)
                 setLoading(false)
@@ -38,51 +34,29 @@ export function useAuth() {
         return () => subscription.unsubscribe()
     }, [])
 
-    const fetchUserRole = async (userId: string, email: string) => {
+    /**
+     * Fetches the public.users profile for the currently authenticated user.
+     * Includes center_id so the app can detect the pending-activation limbo state.
+     */
+    const fetchUserProfile = async (userId: string) => {
         try {
-            console.log('fetchUserRole: Starting fetch for', { userId, email })
-
-            // First try to find by ID (ideal case)
-            let { data, error } = await supabase
+            const { data, error } = await supabase
                 .from('users')
-                .select('*')
+                .select('id, email, role, center_id')
                 .eq('id', userId)
                 .single()
 
-            console.log('fetchUserRole: ID lookup result', { data, error })
-
-            // If not found by ID, try finding by email (mismatch case)
-            if (!data && email) {
-                console.log('fetchUserRole: Attempting email lookup fallback')
-                const { data: emailData, error: emailError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .single()
-
-                console.log('fetchUserRole: Email lookup result', { emailData, emailError })
-
-                if (emailData) {
-                    console.warn('User ID mismatch detected. Using email match.', emailData)
-                    data = emailData
-                }
-            }
-
-            if (error && !data) {
-                console.error('Error fetching user role:', error)
+            if (error || !data) {
                 setUser(null)
-            } else if (data) {
-                console.log('fetchUserRole: User found, setting state', data)
+            } else {
                 setUser({
                     id: data.id,
                     email: data.email,
                     role: data.role,
+                    center_id: data.center_id ?? null,
                 })
-            } else {
-                console.log('fetchUserRole: No data found, user is null')
             }
-        } catch (error) {
-            console.error('Error in fetchUserRole:', error)
+        } catch {
             setUser(null)
         } finally {
             setLoading(false)
@@ -90,22 +64,7 @@ export function useAuth() {
     }
 
     const signIn = async (email: string, password: string) => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-        return { data, error }
-    }
-
-    const signUp = async (email: string, password: string, role: 'manager' | 'employee') => {
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: { role }, // Pass role in metadata
-                emailRedirectTo: window.location.origin,
-            },
-        })
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         return { data, error }
     }
 
@@ -114,12 +73,5 @@ export function useAuth() {
         setUser(null)
     }
 
-    return {
-        user,
-        session,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-    }
+    return { user, session, loading, signIn, signOut }
 }

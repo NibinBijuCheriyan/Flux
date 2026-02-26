@@ -28,7 +28,12 @@ export function useUsers() {
         fetchUsers()
     }, [])
 
-    const addEmployee = async (email: string, managerId: string) => {
+    /**
+     * Pre-creates an employee row in public.users for a given email.
+     * The manager's center_id is passed so the new employee is immediately
+     * linked to the correct center (used when a manager adds someone manually).
+     */
+    const addEmployee = async (email: string, managerId: string, centerId: string | null) => {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -37,6 +42,7 @@ export function useUsers() {
                         email,
                         role: 'employee',
                         added_by: managerId,
+                        center_id: centerId,   // Link to manager's center immediately
                         is_active: true,
                     },
                 ])
@@ -47,6 +53,25 @@ export function useUsers() {
             return { data, error: null }
         } catch (error: any) {
             return { data: null, error }
+        }
+    }
+
+    /**
+     * Approves a pending employee by assigning them to the manager's center.
+     * Called when a manager clicks "Approve" on a user with center_id = null.
+     */
+    const approveEmployee = async (userId: string, centerId: string) => {
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update({ center_id: centerId, is_active: true })
+                .eq('id', userId)
+
+            if (error) throw error
+            await fetchUsers()
+            return { error: null }
+        } catch (error: any) {
+            return { error }
         }
     }
 
@@ -69,6 +94,7 @@ export function useUsers() {
         users,
         loading,
         addEmployee,
+        approveEmployee,
         removeEmployee,
         refetch: fetchUsers,
     }
