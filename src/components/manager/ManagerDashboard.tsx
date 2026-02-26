@@ -8,8 +8,11 @@ import { AllDataView } from './AllDataView'
 import { TokenGenerator } from '../shared/TokenGenerator'
 import { TokenHistory } from '../shared/TokenHistory'
 import { FormEntry } from '../shared/FormEntry'
+import { UI_STRINGS } from '../../lib/uiStrings'
 
 type Tab = 'overview' | 'employees' | 'tokens' | 'form' | 'data'
+
+const S = UI_STRINGS.manager.dashboard
 
 export function ManagerDashboard() {
     const [activeTab, setActiveTab] = useState<Tab>('overview')
@@ -26,19 +29,19 @@ export function ManagerDashboard() {
     )
 
     const tabs = [
-        { id: 'overview' as Tab, label: 'Overview', icon: LayoutDashboard },
-        { id: 'employees' as Tab, label: 'Employees', icon: Users },
-        { id: 'tokens' as Tab, label: 'Tokens', icon: Ticket },
-        { id: 'form' as Tab, label: 'Form Entry', icon: FileText },
-        { id: 'data' as Tab, label: 'All Data', icon: Database },
+        { id: 'overview' as Tab, label: S.tabs.overview, icon: LayoutDashboard },
+        { id: 'employees' as Tab, label: S.tabs.employees, icon: Users },
+        { id: 'tokens' as Tab, label: S.tabs.tokens, icon: Ticket },
+        { id: 'form' as Tab, label: S.tabs.form, icon: FileText },
+        { id: 'data' as Tab, label: S.tabs.data, icon: Database },
     ]
 
     return (
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Manager Dashboard</h1>
-                <p className="text-gray-600">Monitor your team and manage system tokens</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{S.heading}</h1>
+                <p className="text-gray-600">{S.subtitle}</p>
             </div>
 
             {/* Tabs */}
@@ -51,8 +54,8 @@ export function ManagerDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                                        : 'text-gray-600 hover:bg-gray-100'
+                                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                                    : 'text-gray-600 hover:bg-gray-100'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -75,10 +78,8 @@ export function ManagerDashboard() {
                                 </div>
                             </div>
                             <div className="stat-value">{activeTokens.length}</div>
-                            <div className="stat-label">Active Tokens</div>
-                            <div className="stat-change text-green-600">
-                                Currently available
-                            </div>
+                            <div className="stat-label">{S.stats.activeTokens}</div>
+                            <div className="stat-change text-green-600">{S.stats.activeTokensHint}</div>
                         </div>
 
                         <div className="stat-card">
@@ -88,10 +89,8 @@ export function ManagerDashboard() {
                                 </div>
                             </div>
                             <div className="stat-value">{entries.length}</div>
-                            <div className="stat-label">Total Entries</div>
-                            <div className="stat-change text-blue-600">
-                                All time submissions
-                            </div>
+                            <div className="stat-label">{S.stats.totalEntries}</div>
+                            <div className="stat-change text-blue-600">{S.stats.totalEntriesHint}</div>
                         </div>
 
                         <div className="stat-card">
@@ -101,10 +100,8 @@ export function ManagerDashboard() {
                                 </div>
                             </div>
                             <div className="stat-value">{employees.length}</div>
-                            <div className="stat-label">Active Employees</div>
-                            <div className="stat-change text-green-600">
-                                Currently working
-                            </div>
+                            <div className="stat-label">{S.stats.activeEmployees}</div>
+                            <div className="stat-change text-green-600">{S.stats.activeEmployeesHint}</div>
                         </div>
 
                         <div className="stat-card">
@@ -114,24 +111,22 @@ export function ManagerDashboard() {
                                 </div>
                             </div>
                             <div className="stat-value">{thisMonthEntries.length}</div>
-                            <div className="stat-label">This Month</div>
-                            <div className="stat-change text-blue-600">
-                                Monthly submissions
-                            </div>
+                            <div className="stat-label">{S.stats.thisMonth}</div>
+                            <div className="stat-change text-blue-600">{S.stats.thisMonthHint}</div>
                         </div>
                     </div>
 
                     {/* Quick Actions */}
                     <div className="card">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">{S.quickActions.heading}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <button
                                 onClick={() => setActiveTab('employees')}
                                 className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg hover:shadow-lg transition-all duration-200 text-left group"
                             >
                                 <Users className="w-8 h-8 text-blue-600 mb-2 group-hover:scale-110 transition-transform" />
-                                <h3 className="font-semibold text-gray-900">Manage Employees</h3>
-                                <p className="text-sm text-gray-600">Add or remove team members</p>
+                                <h3 className="font-semibold text-gray-900">{S.quickActions.manageEmployees}</h3>
+                                <p className="text-sm text-gray-600">{S.quickActions.manageEmployeesDesc}</p>
                             </button>
 
                             <button
@@ -139,8 +134,8 @@ export function ManagerDashboard() {
                                 className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg hover:shadow-lg transition-all duration-200 text-left group"
                             >
                                 <Ticket className="w-8 h-8 text-purple-600 mb-2 group-hover:scale-110 transition-transform" />
-                                <h3 className="font-semibold text-gray-900">Generate Tokens</h3>
-                                <p className="text-sm text-gray-600">Create new access tokens</p>
+                                <h3 className="font-semibold text-gray-900">{S.quickActions.generateTokens}</h3>
+                                <p className="text-sm text-gray-600">{S.quickActions.generateTokensDesc}</p>
                             </button>
 
                             <button
@@ -148,8 +143,8 @@ export function ManagerDashboard() {
                                 className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg hover:shadow-lg transition-all duration-200 text-left group"
                             >
                                 <FileText className="w-8 h-8 text-green-600 mb-2 group-hover:scale-110 transition-transform" />
-                                <h3 className="font-semibold text-gray-900">Submit Entry</h3>
-                                <p className="text-sm text-gray-600">Create a new form entry</p>
+                                <h3 className="font-semibold text-gray-900">{S.quickActions.submitEntry}</h3>
+                                <p className="text-sm text-gray-600">{S.quickActions.submitEntryDesc}</p>
                             </button>
 
                             <button
@@ -157,8 +152,8 @@ export function ManagerDashboard() {
                                 className="p-4 bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-lg hover:shadow-lg transition-all duration-200 text-left group"
                             >
                                 <Database className="w-8 h-8 text-orange-600 mb-2 group-hover:scale-110 transition-transform" />
-                                <h3 className="font-semibold text-gray-900">View All Data</h3>
-                                <p className="text-sm text-gray-600">Access complete database</p>
+                                <h3 className="font-semibold text-gray-900">{S.quickActions.viewAllData}</h3>
+                                <p className="text-sm text-gray-600">{S.quickActions.viewAllDataDesc}</p>
                             </button>
                         </div>
                     </div>
