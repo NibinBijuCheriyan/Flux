@@ -36,13 +36,13 @@ export function useAuth() {
 
     /**
      * Fetches the public.users profile for the currently authenticated user.
-     * Includes center_id so the app can detect the pending-activation limbo state.
+     * Uses select('*') so it works whether or not center_id column exists yet.
      */
     const fetchUserProfile = async (userId: string) => {
         try {
             const { data, error } = await supabase
                 .from('users')
-                .select('id, email, role, center_id')
+                .select('*')
                 .eq('id', userId)
                 .single()
 

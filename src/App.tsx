@@ -8,7 +8,6 @@ import { EmployeeDashboard } from './components/employee/EmployeeDashboard'
 import { UI_STRINGS } from './lib/uiStrings'
 
 const SNF = UI_STRINGS.app.profileNotFound
-const SPA = UI_STRINGS.app.pendingActivation
 
 function App() {
     const { user, session, loading, signOut } = useAuth()
@@ -21,8 +20,7 @@ function App() {
         )
     }
 
-    // ── State 1: Session exists but no public.users row at all.
-    //    Profile was never created. Contact IT support.
+    // Session exists but no public.users row — profile was never created.
     if (session && !user) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -47,39 +45,13 @@ function App() {
         )
     }
 
-    // ── State 2: Profile exists but center_id is null (limbo / pending activation).
-    //    The auth trigger created the row; a manager must approve & assign them.
-    if (session && user && user.center_id === null) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                <div className="card max-w-md w-full text-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-2xl">⏳</span>
-                    </div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">{SPA.heading}</h2>
-                    <p className="text-gray-600 mb-2">{SPA.body}</p>
-                    <p className="text-sm text-gray-400 mb-6">{SPA.contactHint}</p>
-                    <button
-                        onClick={async () => {
-                            await signOut()
-                            window.location.reload()
-                        }}
-                        className="btn-secondary w-full"
-                    >
-                        {SPA.signOutButton}
-                    </button>
-                </div>
-            </div>
-        )
-    }
-
-    // ── State 3: No session at all — show the login screen.
+    // No session — show login screen.
     if (!user) {
         return <Login />
     }
 
-    // ── State 4: Fully active user — route by role.
-    //    'center_manager' (post-013 migration) and legacy 'manager' both get ManagerDashboard.
+    // Fully active user — route by role.
+    // Supports both 'center_manager' (post-013 migration) and legacy 'manager'.
     const isManager = user.role === 'center_manager' || user.role === 'manager'
 
     return (
