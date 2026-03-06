@@ -44,6 +44,6 @@ A complete, production-ready CRM web application built specifically for service 
 ### 1. Clone and Install Dependencies
 
 ```bash
-git clone <your-repository-url>
+git clone <URL>
 cd flux-crm
 npm install
