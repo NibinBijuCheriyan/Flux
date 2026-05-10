@@ -154,10 +154,7 @@ export function FormEntry({ initialToken }: FormEntryProps) {
                         <div>${date}</div>
                     </div>
                     
-                    <div class="info-row">
-                        <span>Token ID:</span>
-                        <span>${lastEntry.tokenId}</span>
-                    </div>
+                    
                     <div class="info-row">
                         <span>Customer:</span>
                         <span>${lastEntry.customerName}</span>

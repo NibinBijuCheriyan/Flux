@@ -252,7 +252,6 @@ export function TokenGenerator({ onUseToken }: TokenGeneratorProps) {
                             <p className="text-6xl font-black text-gray-900 leading-none my-2">
                                 #{generatedToken.dailyNumber || '?'}
                             </p>
-                            <p className="text-xs text-gray-400 font-mono">{generatedToken.tokenId}</p>
                         </div>
 
                         <div className="border-t pt-4 text-left space-y-2">
