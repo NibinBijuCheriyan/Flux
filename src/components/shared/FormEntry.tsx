@@ -6,6 +6,7 @@ import { FileText, Loader2, CheckCircle2, DollarSign } from 'lucide-react'
 import { useTokens } from '../../hooks/useTokens'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useAuth } from '../../hooks/useAuth'
+import { useCenterName } from '../../hooks/useCenterName'
 
 // Simple schema based on user request
 const formEntrySchema = z.object({
@@ -31,6 +32,7 @@ export function FormEntry({ initialToken }: FormEntryProps) {
     const { user } = useAuth()
     const { validateToken, markTokenAsUsed } = useTokens()
     const { addEntry } = useFormEntries()
+    const { centerName } = useCenterName()
     const [isValidating, setIsValidating] = useState(false)
     const [tokenValid, setTokenValid] = useState<boolean | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -148,7 +150,7 @@ export function FormEntry({ initialToken }: FormEntryProps) {
                 <body>
                     <div class="header">
                         <div class="title">SERVICE RECEIPT</div>
-                        <div>Flux Service Center</div>
+                        <div>${centerName}</div>
                         <div>${date}</div>
                     </div>
                     

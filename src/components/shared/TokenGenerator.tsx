@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { Ticket, Copy, CheckCircle2, Loader2, FileText, Printer } from 'lucide-react'
 import { useTokens } from '../../hooks/useTokens'
 import { useAuth } from '../../hooks/useAuth'
+import { useCenterName } from '../../hooks/useCenterName'
 
 const tokenSchema = z.object({
     customerName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -20,6 +21,7 @@ interface TokenGeneratorProps {
 
 export function TokenGenerator({ onUseToken }: TokenGeneratorProps) {
     const { user } = useAuth()
+    const { centerName } = useCenterName()
     const { generateToken } = useTokens()
     const [generatedToken, setGeneratedToken] = useState<{
         tokenId: string
@@ -239,6 +241,7 @@ export function TokenGenerator({ onUseToken }: TokenGeneratorProps) {
                     <div className="max-w-[300px] mx-auto text-center space-y-4 border-2 border-dashed border-gray-300 p-4">
                         <div className="border-b pb-4">
                             <h1 className="text-xl font-bold uppercase tracking-wider">Service Token</h1>
+                            <p className="text-sm font-medium text-gray-700 mt-1">{centerName}</p>
                             <p className="text-sm text-gray-500">
                                 {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}
                             </p>
