@@ -1,12 +1,14 @@
 import { ReactNode } from 'react'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Wrench } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 interface LayoutProps {
     children: ReactNode
+    activePage?: string
+    onNavigate?: (page: string) => void
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, activePage, onNavigate }: LayoutProps) {
     const { user, signOut } = useAuth()
 
     return (
@@ -28,6 +30,21 @@ export function Layout({ children }: LayoutProps) {
 
                         {user && (
                             <div className="flex items-center gap-4">
+                                {(user.role === 'owner' || user.role === 'manager') && onNavigate && (
+                                    <button
+                                        onClick={() => onNavigate(activePage?.startsWith('tools') ? 'dashboard' : 'tools')}
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
+                                            activePage?.startsWith('tools')
+                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <Wrench className="w-4 h-4" />
+                                        <span className="text-sm font-medium">
+                                            {activePage?.startsWith('tools') ? 'Back to Dashboard' : '🛠 Lamination Tools'}
+                                        </span>
+                                    </button>
+                                )}
                                 <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
                                     <User className="w-4 h-4 text-blue-600" />
                                     <div className="text-sm">

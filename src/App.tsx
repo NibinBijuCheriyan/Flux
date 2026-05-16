@@ -5,12 +5,15 @@ import { LoadingSpinner } from './components/shared/LoadingSpinner'
 import { Login } from './components/auth/Login'
 import { ManagerDashboard } from './components/manager/ManagerDashboard'
 import { EmployeeDashboard } from './components/employee/EmployeeDashboard'
+import { ToolsRouter } from './tools/ToolsRouter'
+import { useState } from 'react'
 import { UI_STRINGS } from './lib/uiStrings'
 
 const SNF = UI_STRINGS.app.profileNotFound
 
 function App() {
     const { user, session, loading, signOut } = useAuth()
+    const [activePage, setActivePage] = useState('dashboard')
 
     if (loading) {
         return (
@@ -56,8 +59,22 @@ function App() {
 
     return (
         <TokensProvider>
-            <Layout>
-                {isManager ? <ManagerDashboard /> : <EmployeeDashboard />}
+            <Layout activePage={activePage} onNavigate={setActivePage}>
+                {activePage === 'dashboard' && (isManager ? <ManagerDashboard /> : <EmployeeDashboard />)}
+                
+                {activePage.startsWith('tools') && isManager && (
+                    <ToolsRouter route={activePage} onNavigate={setActivePage} />
+                )}
+                
+                {activePage.startsWith('tools') && !isManager && (
+                    <div className="card text-center p-8 max-w-md mx-auto mt-12">
+                        <h2 className="text-xl font-bold text-red-600 mb-2">Access Restricted</h2>
+                        <p className="text-gray-600 mb-6">Lamination tools are only available to managers.</p>
+                        <button onClick={() => setActivePage('dashboard')} className="btn-primary w-full">
+                            Return to Dashboard
+                        </button>
+                    </div>
+                )}
             </Layout>
         </TokensProvider>
     )

@@ -14,9 +14,13 @@
     "@supabase/supabase-js": "^2.39.3",
     "@tanstack/react-table": "^8.11.3",
     "date-fns": "^3.0.6",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.303.0",
+    "pdfjs-dist": "^5.7.284",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^15.0.0",
+    "react-easy-crop": "^5.5.7",
     "react-hook-form": "^7.49.3",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"
