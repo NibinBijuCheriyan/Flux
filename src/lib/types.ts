@@ -56,3 +56,14 @@ export interface AuthUser {
     role: string;           // Dynamic — use string comparison (e.g. role === 'center_manager')
     center_id: string | null; // null = limbo / pending activation
 }
+
+export interface ServiceLink {
+    id: string;
+    center_id: string;
+    name: string;
+    url: string;
+    description: string | null;
+    username: string | null;
+    password: string | null;
+    created_at: string;
+}

@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react'
-import Cropper from 'react-easy-crop'
-import { X, Crop, Maximize } from 'lucide-react'
+import { useState, useRef } from 'react'
+import ReactCrop, { type Crop, type PercentCrop } from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
+import { X, Crop as CropIcon, Maximize } from 'lucide-react'
 import { findContentBoundingBox } from '../utils/autoCrop'
 
 interface CropModalProps {
@@ -11,20 +12,25 @@ interface CropModalProps {
 }
 
 export function CropModal({ imageSrc, yStartBias = 0, onClose, onCropComplete }: CropModalProps) {
-    const [crop, setCrop] = useState({ x: 0, y: 0 })
-    const [zoom, setZoom] = useState(1)
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
+    const [crop, setCrop] = useState<Crop>()
+    const [completedCropPercent, setCompletedCropPercent] = useState<PercentCrop | null>(null)
     const [processing, setProcessing] = useState(false)
-
-    const onCropCompleteCb = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
-        setCroppedAreaPixels(croppedAreaPixels)
-    }, [])
+    const imgRef = useRef<HTMLImageElement>(null)
 
     const handleSave = async () => {
-        if (!croppedAreaPixels) return
+        if (!completedCropPercent || !imgRef.current) return
         setProcessing(true)
         try {
-            const result = await getCroppedImg(imageSrc, croppedAreaPixels)
+            const img = imgRef.current
+            // Calculate absolute pixels from percentage
+            const pixelCrop = {
+                x: (completedCropPercent.x / 100) * img.naturalWidth,
+                y: (completedCropPercent.y / 100) * img.naturalHeight,
+                width: (completedCropPercent.width / 100) * img.naturalWidth,
+                height: (completedCropPercent.height / 100) * img.naturalHeight,
+            }
+
+            const result = await getCroppedImg(imageSrc, pixelCrop)
             onCropComplete(result)
         } catch (e) {
             console.error(e)
@@ -58,45 +64,36 @@ export function CropModal({ imageSrc, yStartBias = 0, onClose, onCropComplete }:
             <div className="bg-white rounded-2xl w-full max-w-4xl flex flex-col h-[80vh] overflow-hidden shadow-2xl">
                 <div className="flex items-center justify-between p-4 border-b">
                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <Crop className="w-5 h-5" /> Adjust Crop
+                        <CropIcon className="w-5 h-5" /> Adjust Crop
                     </h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-500">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
                 
-                <div className="relative flex-1 bg-gray-900">
-                    <Cropper
-                        image={imageSrc}
+                <div className="relative flex-1 bg-gray-900 overflow-auto flex items-center justify-center p-4">
+                    <ReactCrop
                         crop={crop}
-                        zoom={zoom}
-                        rotation={0}
-                        aspect={undefined}
-                        onCropChange={setCrop}
-                        onZoomChange={setZoom}
-                        onCropComplete={onCropCompleteCb}
-                    />
+                        onChange={(_, percentCrop) => setCrop(percentCrop)}
+                        onComplete={(_, percentCrop) => setCompletedCropPercent(percentCrop)}
+                        className="max-h-full"
+                    >
+                        <img
+                            ref={imgRef}
+                            src={imageSrc}
+                            alt="Crop preview"
+                            className="max-h-[60vh] w-auto object-contain"
+                            crossOrigin="anonymous"
+                        />
+                    </ReactCrop>
                 </div>
                 
-                <div className="p-4 border-t bg-gray-50 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 flex-1">
-                        <span className="text-sm font-medium text-gray-600">Zoom</span>
-                        <input
-                            type="range"
-                            value={zoom}
-                            min={1}
-                            max={3}
-                            step={0.1}
-                            onChange={(e) => setZoom(Number(e.target.value))}
-                            className="w-48"
-                        />
-                    </div>
-                    
-                    <button onClick={handleAutoCrop} disabled={processing} className="btn-secondary flex items-center gap-2 bg-white">
+                <div className="p-4 border-t bg-gray-50 flex items-center justify-end gap-4">
+                    <button onClick={handleAutoCrop} disabled={processing} className="btn-secondary flex items-center gap-2 bg-white px-4 py-2 rounded-lg font-medium border text-gray-700 hover:bg-gray-50 transition-colors">
                         <Maximize className="w-4 h-4" /> Auto Crop
                     </button>
                     
-                    <button onClick={handleSave} disabled={processing} className="btn-primary">
+                    <button onClick={handleSave} disabled={processing || !completedCropPercent?.width || !completedCropPercent?.height} className="btn-primary px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         {processing ? 'Processing...' : 'Apply Crop'}
                     </button>
                 </div>

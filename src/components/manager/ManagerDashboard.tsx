@@ -1,17 +1,18 @@
 import { useState } from 'react'
-import { LayoutDashboard, Users, Ticket, FileText, Database, Building2, Check, Loader2, Pencil } from 'lucide-react'
+import { LayoutDashboard, Users, Ticket, FileText, Database, Building2, Check, Loader2, Pencil, Globe } from 'lucide-react'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useTokens } from '../../hooks/useTokens'
 import { useUsers } from '../../hooks/useUsers'
 import { EmployeeManagement } from './EmployeeManagement'
 import { AllDataView } from './AllDataView'
+import { ServicesManagement } from './ServicesManagement'
 import { TokenGenerator } from '../shared/TokenGenerator'
 import { TokenHistory } from '../shared/TokenHistory'
 import { FormEntry } from '../shared/FormEntry'
 import { UI_STRINGS } from '../../lib/uiStrings'
 import { useCenterName } from '../../hooks/useCenterName'
 
-type Tab = 'overview' | 'employees' | 'tokens' | 'form' | 'data'
+type Tab = 'overview' | 'employees' | 'tokens' | 'form' | 'data' | 'services'
 
 const S = UI_STRINGS.manager.dashboard
 
@@ -39,6 +40,7 @@ export function ManagerDashboard() {
         { id: 'tokens' as Tab, label: S.tabs.tokens, icon: Ticket },
         { id: 'form' as Tab, label: S.tabs.form, icon: FileText },
         { id: 'data' as Tab, label: S.tabs.data, icon: Database },
+        { id: 'services' as Tab, label: 'Services', icon: Globe },
     ]
 
     return (
@@ -253,6 +255,8 @@ export function ManagerDashboard() {
             {activeTab === 'form' && <FormEntry />}
 
             {activeTab === 'data' && <AllDataView />}
+
+            {activeTab === 'services' && <ServicesManagement />}
         </div>
     )
 }

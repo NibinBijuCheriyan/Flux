@@ -20,8 +20,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^15.0.0",
-    "react-easy-crop": "^5.5.7",
     "react-hook-form": "^7.49.3",
+    "react-image-crop": "^11.0.10",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"
   },

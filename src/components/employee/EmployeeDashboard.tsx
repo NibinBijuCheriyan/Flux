@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LayoutDashboard, Ticket, FileText, Calendar } from 'lucide-react'
+import { LayoutDashboard, Ticket, FileText, Calendar, Globe } from 'lucide-react'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useTokens } from '../../hooks/useTokens'
 import { useAuth } from '../../hooks/useAuth'
@@ -8,8 +8,9 @@ import { TodayDataView } from './TodayDataView'
 import { TokenGenerator } from '../shared/TokenGenerator'
 import { TokenHistory } from '../shared/TokenHistory'
 import { FormEntry } from '../shared/FormEntry'
+import { ServiceDirectory } from './ServiceDirectory'
 
-type Tab = 'overview' | 'tokens' | 'form' | 'mydata'
+type Tab = 'overview' | 'tokens' | 'form' | 'mydata' | 'services'
 
 export function EmployeeDashboard() {
     const [activeTab, setActiveTab] = useState<Tab>('overview')
@@ -35,6 +36,7 @@ export function EmployeeDashboard() {
         { id: 'tokens' as Tab, label: 'Tokens', icon: Ticket },
         { id: 'form' as Tab, label: 'Submit Entry', icon: FileText },
         { id: 'mydata' as Tab, label: "Today's Entries", icon: Calendar },
+        { id: 'services' as Tab, label: 'Services', icon: Globe },
     ]
 
     return (
@@ -170,6 +172,8 @@ export function EmployeeDashboard() {
             {activeTab === 'form' && <FormEntry initialToken={scannedToken} />}
 
             {activeTab === 'mydata' && <TodayDataView />}
+
+            {activeTab === 'services' && <ServiceDirectory />}
         </div>
     )
 }
