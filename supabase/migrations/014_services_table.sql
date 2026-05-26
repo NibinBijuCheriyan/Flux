@@ -21,35 +21,21 @@ CREATE POLICY "Users can view center services" ON service_links
         center_id IN (SELECT center_id FROM users WHERE id = auth.uid())
     );
 
--- Only center managers or super admins can insert services for their center
-CREATE POLICY "Managers can insert services" ON service_links
-    FOR INSERT WITH CHECK (
+-- Only owner, center managers, or super admins can manage services
+CREATE POLICY "Managers can manage services" ON service_links
+    FOR ALL USING (
         EXISTS (
             SELECT 1 FROM users
             WHERE id = auth.uid()
-            AND role IN ('center_manager', 'super_admin')
+            AND role IN ('owner', 'center_manager', 'super_admin')
             AND users.center_id = service_links.center_id
         )
-    );
-
--- Only center managers or super admins can update services for their center
-CREATE POLICY "Managers can update services" ON service_links
-    FOR UPDATE USING (
+    )
+    WITH CHECK (
         EXISTS (
             SELECT 1 FROM users
             WHERE id = auth.uid()
-            AND role IN ('center_manager', 'super_admin')
-            AND users.center_id = service_links.center_id
-        )
-    );
-
--- Only center managers or super admins can delete services for their center
-CREATE POLICY "Managers can delete services" ON service_links
-    FOR DELETE USING (
-        EXISTS (
-            SELECT 1 FROM users
-            WHERE id = auth.uid()
-            AND role IN ('center_manager', 'super_admin')
+            AND role IN ('owner', 'center_manager', 'super_admin')
             AND users.center_id = service_links.center_id
         )
     );

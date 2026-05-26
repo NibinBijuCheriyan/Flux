@@ -67,3 +67,24 @@ export interface ServiceLink {
     password: string | null;
     created_at: string;
 }
+
+export type ExpenseCategory =
+    | 'rent'
+    | 'utilities'
+    | 'supplies'
+    | 'maintenance'
+    | 'salary'
+    | 'transport'
+    | 'food'
+    | 'miscellaneous'
+
+export interface Expense {
+    id: string;
+    center_id: string;
+    logged_by: string;
+    category: ExpenseCategory;
+    amount: number;
+    description: string | null;
+    expense_date: string;
+    created_at: string;
+}
