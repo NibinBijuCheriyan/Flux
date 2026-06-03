@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LayoutDashboard, Users, Ticket, FileText, Database, Building2, Check, Loader2, Pencil, Globe, Wallet } from 'lucide-react'
+import { LayoutDashboard, Users, Ticket, FileText, Database, Building2, Check, Loader2, Pencil, Globe, Wallet, BarChart3 } from 'lucide-react'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useTokens } from '../../hooks/useTokens'
 import { useUsers } from '../../hooks/useUsers'
@@ -7,13 +7,14 @@ import { EmployeeManagement } from './EmployeeManagement'
 import { AllDataView } from './AllDataView'
 import { ServicesManagement } from './ServicesManagement'
 import { ExpenseManagement } from './ExpenseManagement'
+import { FinancialDashboard } from './FinancialDashboard'
 import { TokenGenerator } from '../shared/TokenGenerator'
 import { TokenHistory } from '../shared/TokenHistory'
 import { FormEntry } from '../shared/FormEntry'
 import { UI_STRINGS } from '../../lib/uiStrings'
 import { useCenterName } from '../../hooks/useCenterName'
 
-type Tab = 'overview' | 'employees' | 'tokens' | 'form' | 'data' | 'services' | 'expenses'
+type Tab = 'overview' | 'employees' | 'tokens' | 'form' | 'data' | 'services' | 'expenses' | 'analytics'
 
 const S = UI_STRINGS.manager.dashboard
 
@@ -43,6 +44,7 @@ export function ManagerDashboard() {
         { id: 'data' as Tab, label: S.tabs.data, icon: Database },
         { id: 'services' as Tab, label: 'Services', icon: Globe },
         { id: 'expenses' as Tab, label: 'Expenses', icon: Wallet },
+        { id: 'analytics' as Tab, label: 'P&L Analytics', icon: BarChart3 },
     ]
 
     return (
@@ -261,6 +263,8 @@ export function ManagerDashboard() {
             {activeTab === 'services' && <ServicesManagement />}
 
             {activeTab === 'expenses' && <ExpenseManagement />}
+
+            {activeTab === 'analytics' && <FinancialDashboard />}
         </div>
     )
 }
