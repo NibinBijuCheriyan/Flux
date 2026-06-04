@@ -33,7 +33,7 @@ export function FormEntry({ initialToken }: FormEntryProps) {
     const { validateToken, markTokenAsUsed } = useTokens()
     const { addEntry } = useFormEntries()
     const { centerName } = useCenterName()
-    const [isValidating, setIsValidating] = useState(false)
+    const [_isValidating, setIsValidating] = useState(false)
     const [tokenValid, setTokenValid] = useState<boolean | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitSuccess, setSubmitSuccess] = useState(false)
