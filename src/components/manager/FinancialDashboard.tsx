@@ -1,5 +1,16 @@
 import { useState, useMemo } from 'react'
-import { TrendingUp, TrendingDown, IndianRupee, Landmark, ArrowDownRight, Receipt, BadgeIndianRupee, CalendarDays, Users, Wrench, BarChart3 } from 'lucide-react'
+import { 
+    IndianRupee, 
+    TrendingUp, 
+    TrendingDown, 
+    Receipt, 
+    Landmark, 
+    BadgeIndianRupee, 
+    BarChart3,
+    CreditCard,
+    Banknote,
+    Smartphone
+} from 'lucide-react'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useExpenses } from '../../hooks/useExpenses'
 import { useUsers } from '../../hooks/useUsers'
@@ -47,12 +58,18 @@ export function FinancialDashboard() {
     const pExpenses = useMemo(() => filterByPeriod(expenses, 'expense_date', period), [expenses, period])
 
     // ── P&L metrics ──────────────────────────────────────────────────
-    const grossRevenue   = pEntries.reduce((s, e) => s + Number(e.service_charge || 0), 0)
-    const bankCharges    = pEntries.reduce((s, e) => s + Number(e.bank_charge || 0), 0)
-    const netRevenue     = grossRevenue - bankCharges
-    const totalExpenses  = pExpenses.reduce((s, e) => s + Number(e.amount), 0)
-    const netProfit      = netRevenue - totalExpenses
-    const isProfitable   = netProfit >= 0
+    const totalTransactionAmount = pEntries.reduce((s, e) => s + Number(e.service_charge || 0) + Number(e.bank_charge || 0), 0)
+    const serviceCharge          = pEntries.reduce((s, e) => s + Number(e.service_charge || 0), 0)
+    
+    const totalOnlinePayments    = pEntries
+        .filter(e => e.payment_method === 'Card' || e.payment_method === 'UPI/Online')
+        .reduce((s, e) => s + Number(e.service_charge || 0) + Number(e.bank_charge || 0), 0)
+        
+    const totalCashTransactions  = pEntries
+        .filter(e => e.payment_method === 'Cash')
+        .reduce((s, e) => s + Number(e.service_charge || 0) + Number(e.bank_charge || 0), 0)
+        
+    const totalExpenses          = pExpenses.reduce((s, e) => s + Number(e.amount), 0)
 
     // ── monthly trends ───────────────────────────────────────────────
     const monthlyTrends = useMemo(() => {
@@ -164,46 +181,59 @@ export function FinancialDashboard() {
 
             {/* ── Hero P&L Cards ─────────────────────────────────────── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                {/* Gross Revenue */}
+                {/* Total Transaction Amount */}
                 <div className="stat-card">
                     <div className="flex items-center justify-between mb-3">
                         <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
                             <IndianRupee className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Revenue</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Total</span>
                     </div>
-                    <div className="text-2xl font-extrabold text-gray-900">{fmt(grossRevenue)}</div>
-                    <div className="stat-label">Gross Revenue</div>
-                    <div className="stat-change text-emerald-600">{pEntries.length} services</div>
+                    <div className="text-2xl font-extrabold text-gray-900">{fmt(totalTransactionAmount)}</div>
+                    <div className="stat-label">Total Transaction Amount</div>
+                    <div className="stat-change text-emerald-600">{pEntries.length} transactions</div>
                 </div>
 
-                {/* Bank Charges */}
-                <div className="stat-card">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="w-11 h-11 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/25">
-                            <Landmark className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Deducted</span>
-                    </div>
-                    <div className="text-2xl font-extrabold text-gray-900">{fmt(bankCharges)}</div>
-                    <div className="stat-label">Bank Charges</div>
-                    <div className="stat-change text-amber-600">Processing fees</div>
-                </div>
-
-                {/* Net Revenue */}
+                {/* Service Charge */}
                 <div className="stat-card">
                     <div className="flex items-center justify-between mb-3">
                         <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                             <BadgeIndianRupee className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Net</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Revenue</span>
                     </div>
-                    <div className="text-2xl font-extrabold text-gray-900">{fmt(netRevenue)}</div>
-                    <div className="stat-label">Net Revenue</div>
-                    <div className="stat-change text-blue-600">After bank charges</div>
+                    <div className="text-2xl font-extrabold text-gray-900">{fmt(serviceCharge)}</div>
+                    <div className="stat-label">Service Charge</div>
+                    <div className="stat-change text-blue-600">Core earnings</div>
                 </div>
 
-                {/* Expenses */}
+                {/* Total Online Payments */}
+                <div className="stat-card">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="w-11 h-11 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/25">
+                            <CreditCard className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Online</span>
+                    </div>
+                    <div className="text-2xl font-extrabold text-gray-900">{fmt(totalOnlinePayments)}</div>
+                    <div className="stat-label">Total Online Payments</div>
+                    <div className="stat-change text-violet-600">UPI & Cards</div>
+                </div>
+
+                {/* Total Cash Transactions */}
+                <div className="stat-card">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="w-11 h-11 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/25">
+                            <Banknote className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Cash</span>
+                    </div>
+                    <div className="text-2xl font-extrabold text-gray-900">{fmt(totalCashTransactions)}</div>
+                    <div className="stat-label">Total Cash Transactions</div>
+                    <div className="stat-change text-amber-600">Physical currency</div>
+                </div>
+
+                {/* Total Expenses */}
                 <div className="stat-card">
                     <div className="flex items-center justify-between mb-3">
                         <div className="w-11 h-11 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/25">
@@ -212,28 +242,8 @@ export function FinancialDashboard() {
                         <span className="text-[10px] font-bold uppercase tracking-widest text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">Spent</span>
                     </div>
                     <div className="text-2xl font-extrabold text-gray-900">{fmt(totalExpenses)}</div>
-                    <div className="stat-label">Operating Expenses</div>
+                    <div className="stat-label">Total Expenses</div>
                     <div className="stat-change text-rose-600">{pExpenses.length} entries</div>
-                </div>
-
-                {/* Net Profit / Loss */}
-                <div className={`stat-card ring-2 ${isProfitable ? 'ring-emerald-300/60' : 'ring-red-300/60'}`}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-lg ${isProfitable ? 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/25' : 'bg-gradient-to-br from-red-500 to-rose-600 shadow-red-500/25'}`}>
-                            {isProfitable ? <TrendingUp className="w-5 h-5 text-white" /> : <TrendingDown className="w-5 h-5 text-white" />}
-                        </div>
-                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${isProfitable ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'}`}>
-                            {isProfitable ? 'Profit' : 'Loss'}
-                        </span>
-                    </div>
-                    <div className={`text-2xl font-extrabold ${isProfitable ? 'text-emerald-700' : 'text-red-600'}`}>
-                        {isProfitable ? '' : '−'}{fmt(netProfit)}
-                    </div>
-                    <div className="stat-label">Net {isProfitable ? 'Profit' : 'Loss'}</div>
-                    <div className={`stat-change ${isProfitable ? 'text-emerald-600' : 'text-red-500'}`}>
-                        {isProfitable ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        Bottom line
-                    </div>
                 </div>
             </div>
 
