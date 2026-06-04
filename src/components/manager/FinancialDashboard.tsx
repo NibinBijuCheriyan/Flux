@@ -340,28 +340,30 @@ export function FinancialDashboard() {
                     {byService.length === 0 ? (
                         <p className="text-sm text-gray-400 py-6 text-center">No data for this period</p>
                     ) : (
-                        <div className="space-y-3">
-                            {byService.map((s, i) => {
-                                const pct = grossRevenue > 0 ? (s.total / grossRevenue) * 100 : 0
-                                return (
-                                    <div key={s.name}>
-                                        <div className="flex items-center justify-between mb-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-gray-400 w-5">{i + 1}.</span>
-                                                <span className="text-sm font-medium text-gray-800 truncate max-w-[180px]">{s.name}</span>
+                        <div className="max-h-[340px] overflow-y-auto pr-1">
+                            <div className="space-y-3">
+                                {byService.map((s, i) => {
+                                    const pct = grossRevenue > 0 ? (s.total / grossRevenue) * 100 : 0
+                                    return (
+                                        <div key={s.name}>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold text-gray-400 w-5">{i + 1}.</span>
+                                                    <span className="text-sm font-medium text-gray-800 truncate max-w-[180px]">{s.name}</span>
+                                                </div>
+                                                <div className="text-sm font-bold text-gray-900">{fmt(s.total)}</div>
                                             </div>
-                                            <div className="text-sm font-bold text-gray-900">{fmt(s.total)}</div>
+                                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                            </div>
+                                            <div className="flex justify-between mt-0.5">
+                                                <span className="text-[10px] text-gray-400">{s.count} service{s.count !== 1 ? 's' : ''}</span>
+                                                <span className="text-[10px] text-gray-400">Avg {fmt(s.avg)}</span>
+                                            </div>
                                         </div>
-                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-                                        </div>
-                                        <div className="flex justify-between mt-0.5">
-                                            <span className="text-[10px] text-gray-400">{s.count} service{s.count !== 1 ? 's' : ''}</span>
-                                            <span className="text-[10px] text-gray-400">Avg {fmt(s.avg)}</span>
-                                        </div>
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -380,25 +382,27 @@ export function FinancialDashboard() {
                     {byEmployee.length === 0 ? (
                         <p className="text-sm text-gray-400 py-6 text-center">No data for this period</p>
                     ) : (
-                        <div className="space-y-3">
-                            {byEmployee.map((emp, i) => {
-                                const pct = grossRevenue > 0 ? (emp.revenue / grossRevenue) * 100 : 0
-                                return (
-                                    <div key={emp.id}>
-                                        <div className="flex items-center justify-between mb-1">
-                                            <div className="flex items-center gap-2">
-                                                {i === 0 && byEmployee.length > 1 && <span className="text-xs">🏆</span>}
-                                                <span className="text-sm font-medium text-gray-800 truncate max-w-[200px]">{emp.email}</span>
+                        <div className="max-h-[340px] overflow-y-auto pr-1">
+                            <div className="space-y-3">
+                                {byEmployee.map((emp, i) => {
+                                    const pct = grossRevenue > 0 ? (emp.revenue / grossRevenue) * 100 : 0
+                                    return (
+                                        <div key={emp.id}>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    {i === 0 && byEmployee.length > 1 && <span className="text-xs">🏆</span>}
+                                                    <span className="text-sm font-medium text-gray-800 truncate max-w-[200px]">{emp.email}</span>
+                                                </div>
+                                                <div className="text-sm font-bold text-gray-900">{fmt(emp.revenue)}</div>
                                             </div>
-                                            <div className="text-sm font-bold text-gray-900">{fmt(emp.revenue)}</div>
+                                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                            </div>
+                                            <span className="text-[10px] text-gray-400">{emp.count} entr{emp.count !== 1 ? 'ies' : 'y'}</span>
                                         </div>
-                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-                                        </div>
-                                        <span className="text-[10px] text-gray-400">{emp.count} entr{emp.count !== 1 ? 'ies' : 'y'}</span>
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
