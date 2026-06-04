@@ -4,12 +4,14 @@ import {
     TrendingUp, 
     TrendingDown, 
     Receipt, 
-    Landmark, 
     BadgeIndianRupee, 
     BarChart3,
     CreditCard,
     Banknote,
-    Smartphone
+    CalendarDays,
+    Wrench,
+    Users,
+    ArrowDownRight
 } from 'lucide-react'
 import { useFormEntries } from '../../hooks/useFormEntries'
 import { useExpenses } from '../../hooks/useExpenses'
@@ -353,7 +355,7 @@ export function FinancialDashboard() {
                         <div className="max-h-[340px] overflow-y-auto pr-1">
                             <div className="space-y-3">
                                 {byService.map((s, i) => {
-                                    const pct = grossRevenue > 0 ? (s.total / grossRevenue) * 100 : 0
+                                    const pct = serviceCharge > 0 ? (s.total / serviceCharge) * 100 : 0
                                     return (
                                         <div key={s.name}>
                                             <div className="flex items-center justify-between mb-1">
@@ -395,7 +397,7 @@ export function FinancialDashboard() {
                         <div className="max-h-[340px] overflow-y-auto pr-1">
                             <div className="space-y-3">
                                 {byEmployee.map((emp, i) => {
-                                    const pct = grossRevenue > 0 ? (emp.revenue / grossRevenue) * 100 : 0
+                                    const pct = serviceCharge > 0 ? (emp.revenue / serviceCharge) * 100 : 0
                                     return (
                                         <div key={emp.id}>
                                             <div className="flex items-center justify-between mb-1">
