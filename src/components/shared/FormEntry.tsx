@@ -231,66 +231,30 @@ export function FormEntry({ initialToken }: FormEntryProps) {
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* 1. Token (Required for Validity) */}
+                {/* 1. Token (Hidden - auto-handled) */}
+                <input type="hidden" {...register('tokenId')} />
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <label className="label">
-                        Access Token <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            {...(() => {
-                                const { onChange, ...rest } = register('tokenId')
-                                return {
-                                    ...rest,
-                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                                        onChange(e)
-                                        setTokenValid(null)
-                                        // Reset success message when user starts new entry
-                                        if (submitSuccess) {
-                                            setSubmitSuccess(false)
-                                            setLastEntry(null)
-                                        }
-                                    }
-                                }
-                            })()}
-                            className="input flex-1"
-                            placeholder="Scan or enter token ID"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => handleTokenValidation()}
-                            disabled={!tokenId || isValidating}
-                            className="btn-secondary"
-                        >
-                            {isValidating ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    Checking...
-                                </>
-                            ) : (
-                                'Validate'
-                            )}
-                        </button>
-                    </div>
-                    {errors.tokenId && (
-                        <p className="text-red-500 text-xs mt-1">{errors.tokenId.message}</p>
-                    )}
-
                     {/* Customer Name Display (Auto-filled) */}
-                    <div className="mt-4">
-                        <label className="label text-xs uppercase tracking-wide text-gray-500">Customer Name</label>
-                        <input
-                            type="text"
-                            {...register('customerName')}
-                            className="w-full bg-transparent border-b border-blue-200 py-1 text-gray-900 font-medium focus:outline-none"
-                            readOnly
-                            placeholder="Waiting for token..."
-                        />
-                        {errors.customerName && (
-                            <p className="text-red-500 text-xs mt-1">Token must be validated</p>
-                        )}
-                    </div>
+                    <label className="label text-xs uppercase tracking-wide text-gray-500">Customer Name</label>
+                    <input
+                        type="text"
+                        {...register('customerName')}
+                        className="w-full bg-transparent border-b border-blue-200 py-1 text-gray-900 font-medium focus:outline-none"
+                        readOnly
+                        placeholder={tokenValid === true ? '' : 'Waiting for token...'}
+                    />
+                    {tokenValid === true && (
+                        <p className="text-green-600 text-xs mt-2 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Token verified
+                        </p>
+                    )}
+                    {tokenValid === false && (
+                        <p className="text-red-500 text-xs mt-1">Invalid token</p>
+                    )}
+                    {errors.customerName && (
+                        <p className="text-red-500 text-xs mt-1">Token must be validated</p>
+                    )}
                 </div>
 
                 {/* 2. Service Details */}

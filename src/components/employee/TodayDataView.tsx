@@ -20,7 +20,6 @@ export function TodayDataView() {
     const exportToExcel = () => {
         const dataToExport = todayEntries.map(entry => ({
             'Time': format(new Date(entry.submitted_at), 'HH:mm'),
-            'Token ID': entry.token_used || '-',
             'Customer Name': entry.customer_name,
             'Service Type': entry.service_type,
             'Payment Method': entry.payment_method || '-',
@@ -106,7 +105,6 @@ export function TodayDataView() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                             <div className="font-medium">{entry.customer_name}</div>
-                                            <div className="text-xs text-gray-500 font-mono">{entry.token_used}</div>
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                             {entry.service_type}

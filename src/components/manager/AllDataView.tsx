@@ -51,7 +51,6 @@ export function AllDataView() {
         const dataToExport = filteredEntries.map(entry => ({
             'Date/Time': format(new Date(entry.submitted_at), 'yyyy-MM-dd HH:mm'),
             'Employee': users.find((u) => u.id === entry.employee_id)?.email || 'Unknown',
-            'Token ID': entry.token_used || '-',
             'Customer Name': entry.customer_name,
             'Service Type': entry.service_type,
             'Status': entry.status,
@@ -142,9 +141,6 @@ export function AllDataView() {
                                 Employee
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Token
-                            </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Customer
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -179,11 +175,6 @@ export function AllDataView() {
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                         {users.find((u) => u.id === entry.employee_id)?.email || 'Unknown'}
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className="font-mono text-xs text-gray-600">
-                                            {entry.token_used || '-'}
-                                        </span>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                         {entry.customer_name}
