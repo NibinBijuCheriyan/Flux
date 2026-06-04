@@ -167,7 +167,7 @@ export function EmployeeDashboard() {
             {activeTab === 'tokens' && (
                 <div className="space-y-6">
                     <TokenGenerator onUseToken={handleUseToken} />
-                    <TokenHistory />
+                    <TokenHistory onUseToken={handleUseToken} />
                 </div>
             )}
 

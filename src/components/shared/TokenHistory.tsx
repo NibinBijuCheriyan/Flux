@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { Search, Filter, XCircle } from 'lucide-react'
+import { Search, Filter, XCircle, FileText } from 'lucide-react'
 import { useTokens } from '../../hooks/useTokens'
 import { useAuth } from '../../hooks/useAuth'
 import { LoadingSpinner } from './LoadingSpinner'
 
-export function TokenHistory() {
+interface TokenHistoryProps {
+    onUseToken?: (tokenId: string) => void
+}
+
+export function TokenHistory({ onUseToken }: TokenHistoryProps) {
     const { user } = useAuth()
     const { tokens, loading, cancelToken } = useTokens()
     const [searchTerm, setSearchTerm] = useState('')
@@ -91,11 +95,9 @@ export function TokenHistory() {
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Used At
                             </th>
-                            {(user?.role === 'manager' || user?.role === 'owner') && (
-                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            )}
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -141,19 +143,28 @@ export function TokenHistory() {
                                             ? format(new Date(token.used_at), 'MMM dd, yyyy HH:mm')
                                             : '-'}
                                     </td>
-                                    {(user?.role === 'manager' || user?.role === 'owner') && (
                                         <td className="px-4 py-3 whitespace-nowrap">
-                                            {token.status === 'active' && (
-                                                <button
-                                                    onClick={() => handleCancelToken(token.id)}
-                                                    className="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1"
-                                                >
-                                                    <XCircle className="w-4 h-4" />
-                                                    Cancel
-                                                </button>
-                                            )}
+                                            <div className="flex items-center gap-2">
+                                                {token.status === 'active' && onUseToken && (
+                                                    <button
+                                                        onClick={() => onUseToken(token.token_id)}
+                                                        className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md flex items-center gap-1.5"
+                                                    >
+                                                        <FileText className="w-3.5 h-3.5" />
+                                                        Use
+                                                    </button>
+                                                )}
+                                                {(user?.role === 'manager' || user?.role === 'owner') && token.status === 'active' && (
+                                                    <button
+                                                        onClick={() => handleCancelToken(token.id)}
+                                                        className="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1"
+                                                    >
+                                                        <XCircle className="w-4 h-4" />
+                                                        Cancel
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
-                                    )}
                                 </tr>
                             ))
                         )}

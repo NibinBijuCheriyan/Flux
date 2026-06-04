@@ -27,6 +27,12 @@ export function ManagerDashboard() {
     const [editingCenterName, setEditingCenterName] = useState(false)
     const [newCenterName, setNewCenterName] = useState('')
     const [savingCenterName, setSavingCenterName] = useState(false)
+    const [scannedToken, setScannedToken] = useState<string | undefined>(undefined)
+
+    const handleUseToken = (tokenId: string) => {
+        setScannedToken(tokenId)
+        setActiveTab('form')
+    }
 
     const employees = users.filter((u) => u.role === 'employee')
     const activeTokens = tokens.filter((t) => t.status === 'active')
@@ -251,12 +257,12 @@ export function ManagerDashboard() {
 
             {activeTab === 'tokens' && (
                 <div className="space-y-6">
-                    <TokenGenerator />
-                    <TokenHistory />
+                    <TokenGenerator onUseToken={handleUseToken} />
+                    <TokenHistory onUseToken={handleUseToken} />
                 </div>
             )}
 
-            {activeTab === 'form' && <FormEntry />}
+            {activeTab === 'form' && <FormEntry initialToken={scannedToken} />}
 
             {activeTab === 'data' && <AllDataView />}
 
