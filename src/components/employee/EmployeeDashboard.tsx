@@ -22,7 +22,8 @@ export function EmployeeDashboard() {
     // Employee can only see their own data
     const myEntries = entries.filter((e) => e.employee_id === user?.id)
     const myTodayEntries = myEntries.filter((e) => isToday(new Date(e.submitted_at)))
-    const myTokens = tokens.filter((t) => t.generated_by === user?.id)
+    // All center tokens are now visible (RLS returns all tokens in the employee's center)
+    const centerTokens = tokens
 
     const [scannedToken, setScannedToken] = useState<string | undefined>(undefined)
 
@@ -106,9 +107,9 @@ export function EmployeeDashboard() {
                                     <Ticket className="w-6 h-6 text-white" />
                                 </div>
                             </div>
-                            <div className="stat-value">{myTokens.length}</div>
+                            <div className="stat-value">{centerTokens.length}</div>
                             <div className="stat-label">Tokens Generated</div>
-                            <div className="stat-change text-purple-600">By you</div>
+                            <div className="stat-change text-purple-600">In your center</div>
                         </div>
                     </div>
 
