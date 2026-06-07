@@ -8,7 +8,8 @@ export function useTokens() {
         customerName: string,
         customerPhone: string,
         userId: string,
-        notes?: string
+        notes?: string,
+        centerId?: string | null
     ) => {
         try {
             // SMART TOKEN GENERATION
@@ -27,18 +28,23 @@ export function useTokens() {
             const encoded = btoa(jsonString)
             const tokenId = `FLX-${encoded}`
 
+            const insertPayload: Record<string, any> = {
+                token_id: tokenId,
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                notes: notes,
+                generated_by: userId,
+                status: 'active',
+            }
+
+            // Attach center_id so the token is visible to everyone in the center
+            if (centerId) {
+                insertPayload.center_id = centerId
+            }
+
             const { data, error } = await supabase
                 .from('tokens')
-                .insert([
-                    {
-                        token_id: tokenId,
-                        customer_name: customerName,
-                        customer_phone: customerPhone,
-                        notes: notes,
-                        generated_by: userId,
-                        status: 'active',
-                    },
-                ])
+                .insert([insertPayload])
                 .select()
                 .single()
 

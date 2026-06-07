@@ -49,7 +49,8 @@ export function TokenGenerator({ onUseToken }: TokenGeneratorProps) {
             data.customerName,
             data.customerPhone,
             user.id,
-            data.notes
+            data.notes,
+            user.center_id
         )
 
         if (error) {
