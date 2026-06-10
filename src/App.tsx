@@ -6,10 +6,63 @@ import { Login } from './components/auth/Login'
 import { ManagerDashboard } from './components/manager/ManagerDashboard'
 import { EmployeeDashboard } from './components/employee/EmployeeDashboard'
 import { ToolsRouter } from './tools/ToolsRouter'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { UI_STRINGS } from './lib/uiStrings'
 
 const SNF = UI_STRINGS.app.profileNotFound
+
+function ProfileNotFoundFallback({ signOut }: { signOut: () => Promise<void> }) {
+    const [showError, setShowError] = useState(false)
+
+    useEffect(() => {
+        const timer = setTimeout(() => setShowError(true), 3000)
+        return () => clearTimeout(timer)
+    }, [])
+
+    if (!showError) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex flex-col w-full">
+                {/* Header Skeleton */}
+                <div className="h-16 bg-white border-b flex items-center px-6 shadow-sm">
+                    <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
+                    <div className="ml-auto h-10 w-10 bg-gray-200 rounded-full animate-pulse" />
+                </div>
+                {/* Content Skeleton */}
+                <div className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+                    <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-8" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="h-32 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse" />
+                        <div className="h-32 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse" />
+                        <div className="h-32 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse" />
+                    </div>
+                    <div className="h-96 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse mt-6" />
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+            <div className="card max-w-md w-full text-center">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">🔒</span>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">{SNF.heading}</h2>
+                <p className="text-gray-600 mb-2">{SNF.body}</p>
+                <p className="text-sm text-gray-400 mb-6">{SNF.contactHint}</p>
+                <button
+                    onClick={async () => {
+                        await signOut()
+                        window.location.reload()
+                    }}
+                    className="btn-secondary w-full"
+                >
+                    {SNF.signOutButton}
+                </button>
+            </div>
+        </div>
+    )
+}
 
 function App() {
     const { user, session, loading, signOut } = useAuth()
@@ -25,27 +78,7 @@ function App() {
 
     // Session exists but no public.users row — profile was never created.
     if (session && !user) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                <div className="card max-w-md w-full text-center">
-                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-2xl">🔒</span>
-                    </div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">{SNF.heading}</h2>
-                    <p className="text-gray-600 mb-2">{SNF.body}</p>
-                    <p className="text-sm text-gray-400 mb-6">{SNF.contactHint}</p>
-                    <button
-                        onClick={async () => {
-                            await signOut()
-                            window.location.reload()
-                        }}
-                        className="btn-secondary w-full"
-                    >
-                        {SNF.signOutButton}
-                    </button>
-                </div>
-            </div>
-        )
+        return <ProfileNotFoundFallback signOut={signOut} />
     }
 
     // No session — show login screen.
