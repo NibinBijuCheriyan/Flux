@@ -11,7 +11,7 @@ export function Login() {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [isRegistering, setIsRegistering] = useState(false)
-    const [role, setRole] = useState<'employee' | 'manager'>('employee')
+    const [role, setRole] = useState<'employee' | 'owner'>('employee')
     const [verificationSent, setVerificationSent] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -111,18 +111,18 @@ export function Login() {
                                     type="button"
                                     onClick={() => setRole('employee')}
                                     className={`flex-1 py-2.5 px-4 rounded-lg border-2 text-sm font-medium transition-all ${role === 'employee'
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
                                         }`}
                                 >
                                     Employee
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setRole('manager')}
-                                    className={`flex-1 py-2.5 px-4 rounded-lg border-2 text-sm font-medium transition-all ${role === 'manager'
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                    onClick={() => setRole('owner')}
+                                    className={`flex-1 py-2.5 px-4 rounded-lg border-2 text-sm font-medium transition-all ${role === 'owner'
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
                                         }`}
                                 >
                                     Owner
