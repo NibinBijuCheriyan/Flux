@@ -75,7 +75,7 @@ export function TokenHistory({ onUseToken }: TokenHistoryProps) {
                     <thead className="bg-gray-50 border-b-2 border-gray-200">
                         <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Token ID
+                                Description
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 No.
@@ -111,8 +111,8 @@ export function TokenHistory({ onUseToken }: TokenHistoryProps) {
                             filteredTokens.map((token) => (
                                 <tr key={token.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className="font-mono text-sm font-medium text-gray-900">
-                                            {token.token_id}
+                                        <span className="text-sm font-medium text-gray-900 truncate max-w-xs block">
+                                            {token.notes || 'nil'}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-bold">
